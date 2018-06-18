@@ -73,6 +73,7 @@ private:
    void createRenderJobByMapping(const ::CORBA::WChar* renderClusterId, INT32 mappingType);
    void createUploadTimerByMapping(const ::CORBA::WChar* uploadClusterId, INT32 mappingType);
    void createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId, INT32 mappingType);
+   TCHAR* getHomeChannelId(INT32 mappingId, INT32 mappingType);
 
 public:
    void onDownloadStartup(const ::CORBA::WChar* downloadClusterId);

@@ -3712,8 +3712,6 @@ AC_CONFIG_FILES([
 	src/appagent/Makefile
 	src/client/Makefile
 	src/client/install/Makefile
-	src/client/java/Makefile
-	src/client/java/netxms-client/Makefile
 	src/client/libnxclient/Makefile
 	src/client/nxalarm/Makefile
 	src/client/nxevent/Makefile

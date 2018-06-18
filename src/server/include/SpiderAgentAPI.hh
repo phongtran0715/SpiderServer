@@ -630,9 +630,10 @@ _CORBA_MODULE_BEG
   {
   public:
     // IDL operations
-    ::CORBA::Boolean createUploadTimer(::CORBA::Long timerId, ::CORBA::Long timerType);
-    ::CORBA::Boolean deleteUploadTimer(::CORBA::Long timerId, ::CORBA::Long timerType);
-    ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
+    ::CORBA::Boolean createUploadTimer(const ::CORBA::WChar* cHomeId);
+    ::CORBA::Boolean deleteUploadTimer(const ::CORBA::WChar* cHomeId);
+    ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo, const ::CORBA::WChar* cHomeId);
+    ::CORBA::Boolean deleteUploadJob(::CORBA::Long jobId, const ::CORBA::WChar* cHomeId);
 
     // Constructors
     inline _objref_UploadSide()  { _PR_setobj(0); }  // nil
@@ -667,9 +668,10 @@ _CORBA_MODULE_BEG
   public:
     virtual ~_impl_UploadSide();
 
-    virtual ::CORBA::Boolean createUploadTimer(::CORBA::Long timerId, ::CORBA::Long timerType) = 0;
-    virtual ::CORBA::Boolean deleteUploadTimer(::CORBA::Long timerId, ::CORBA::Long timerType) = 0;
-    virtual ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
+    virtual ::CORBA::Boolean createUploadTimer(const ::CORBA::WChar* cHomeId) = 0;
+    virtual ::CORBA::Boolean deleteUploadTimer(const ::CORBA::WChar* cHomeId) = 0;
+    virtual ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo, const ::CORBA::WChar* cHomeId) = 0;
+    virtual ::CORBA::Boolean deleteUploadJob(::CORBA::Long jobId, const ::CORBA::WChar* cHomeId) = 0;
     
   public:  // Really protected, workaround for xlC
     virtual _CORBA_Boolean _dispatch(omniCallHandle&);

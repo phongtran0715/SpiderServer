@@ -187,7 +187,7 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 	SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadClusterId);
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
 	TCHAR query [MAX_DB_STRING];
-	_sntprintf(query, sizeof query, _T("SELECT DISTINCT Id FROM %s WHERE StatusSync = 1 AND UploadClusterId = '%s'"), mappingTable, uploadClusterId);
+	_sntprintf(query, sizeof query, _T("SELECT DISTINCT HomeChannelId FROM %s WHERE StatusSync = 1 AND UploadClusterId = '%s'"), mappingTable, uploadClusterId);
 	DbgPrintf(6, _T("AgentSide_i::[createUploadTimerByMapping] SQL query = %s"), query);
 	DB_STATEMENT hStmt = DBPrepare(hdb, query);
 	if (hStmt != NULL)
@@ -199,14 +199,14 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 			DbgPrintf(6, _T("AgentSide_i::[createUploadTimerByMapping] dwNumRecords = %d"), dwNumRecords);
 			for (i = 0; i < dwNumRecords; i++)
 			{
-				INT32 mappingId = DBGetFieldInt64(hResult, i, 0);
+				TCHAR* cHomeId = DBGetField(hResult, i, 0, NULL, 0);
 				if (uploadClient->initSuccess)
 				{
 					if (uploadClient->mUploadRef != NULL)
 					{
 						try
 						{
-							uploadClient->mUploadRef->createUploadTimer(mappingId, mappingType);
+							uploadClient->mUploadRef->createUploadTimer(cHomeId);
 						}
 						catch (CORBA::TRANSIENT&) {
 							DbgPrintf(1, _T("AgentSide_i::[createUploadTimerByMapping] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -231,7 +231,7 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 
 void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId, INT32 mappingType)
 {
-	DbgPrintf(6, _T("AgentSide_i::[createUploadJobByMapping] CSQL query : uploadClusterId = %s , mappingType = %d"), uploadClusterId, mappingType);
+	DbgPrintf(6, _T("AgentSide_i::[createUploadJobByMapping] SQL query : uploadClusterId = %s , mappingType = %d"), uploadClusterId, mappingType);
 	TCHAR* mappingTable = getMappingTableNameByType(mappingType);
 	if (mappingTable == nullptr)
 	{
@@ -288,7 +288,13 @@ void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId
 							vInfo.mappingId = mappingId;
 							vInfo.mappingType = mappingType;
 							vInfo.license = license;
-							uploadClient->mUploadRef->createUploadJob(id, vInfo);
+							TCHAR* cHomeId = getHomeChannelId(mappingId, mappingType);
+							if (cHomeId != nullptr)
+							{
+								uploadClient->mUploadRef->createUploadJob(id, vInfo, ::CORBA::wstring_dup(cHomeId));
+							} else {
+								DbgPrintf(1, _T("AgentSide_i::[createUploadJobByMapping] : home channel ID is NULL"));
+							}
 						}
 						catch (CORBA::TRANSIENT&) {
 							DbgPrintf(1, _T("AgentSide_i::[createUploadJobByMapping] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -308,6 +314,42 @@ void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId
 		}
 	}
 	DBConnectionPoolReleaseConnection(hdb);
+}
+
+TCHAR* AgentSide_i::getHomeChannelId(INT32 mappingId, INT32 mappingType)
+{
+	TCHAR* cHomeId = nullptr;
+	TCHAR* mappingTable = getMappingTableNameByType(mappingType);
+	if (mappingTable == nullptr)
+	{
+		DbgPrintf(1, _T("AgentSide_i::[getHomeChannelId] Can not get mapping table by mapping type = %d"), mappingType);
+		return cHomeId;
+	}
+	DB_RESULT hResult;
+	UINT32 dwNumRecords;
+	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+	TCHAR query [MAX_DB_STRING];
+	//TODO: set id for another mapping type (palylist / keyword, ...)
+	_sntprintf(query, sizeof query,  _T("SELECT HomeChannelId FROM %s WHERE Id = %d "), mappingTable, mappingId);
+	DbgPrintf(6, _T("AgentSide_i::[getHomeChannelId] SQL query : %s"), query);
+	DB_STATEMENT hStmt = DBPrepare(hdb, query);
+	if (hStmt != NULL)
+	{
+		hResult = DBSelectPrepared(hStmt);
+		if (hResult != NULL)
+		{
+			dwNumRecords = DBGetNumRows(hResult);
+			DbgPrintf(6, _T("AgentSide_i::[getHomeChannelId] : number record = %d"), dwNumRecords);
+			if (dwNumRecords > 0)
+			{
+				cHomeId = DBGetField(hResult, 0, 0, NULL, 0);
+				DbgPrintf(6, _T("AgentSide_i::[getHomeChannelId] : home channel ID = %s"), cHomeId);
+			}
+			DBFreeResult(hResult);
+		}
+	}
+	DBConnectionPoolReleaseConnection(hdb);
+	return cHomeId;
 }
 
 TCHAR* AgentSide_i::getMappingTableNameByType(INT32 mappingType)
@@ -533,7 +575,13 @@ void AgentSide_i::updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::
 				{
 					try
 					{
-						uploadClient->mUploadRef->createUploadJob(jobId, vInfo);
+						TCHAR* cHomeId = getHomeChannelId((INT32)vInfo.mappingId, (INT32)vInfo.mappingType);
+						if (cHomeId != nullptr)
+						{
+							uploadClient->mUploadRef->createUploadJob(jobId, vInfo, ::CORBA::wstring_dup(cHomeId));
+						}else{
+							DbgPrintf(6, _T("AgentSide_i::[updateRenderedVideo] home channel ID is NULL "));
+						}
 					}
 					catch (CORBA::TRANSIENT&) {
 						DbgPrintf(1, _T("AgentSide_i::[] : Caught system exception TRANSIENT -- unable to contact the server"));

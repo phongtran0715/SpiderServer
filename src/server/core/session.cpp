@@ -14453,7 +14453,7 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
                {
                   try
                   {
-                     uploadClient->mUploadRef->createUploadTimer(mappingId, TYPE_MAPPING_CHANNEL);
+                     uploadClient->mUploadRef->createUploadTimer(::CORBA::wstring_dup(cHomeId));
                   }
                   catch (CORBA::TRANSIENT&) {
                      debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14944,7 +14944,8 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
          {
             debugPrintf(6, _T("ClientSession::[%s] Init corba for upload client successful!"), __FUNCTION__);
             try {
-               uploadClient->mUploadRef->deleteUploadTimer(id, TYPE_MAPPING_CHANNEL);
+               //TODO: check condition to delete upoad timer
+               //uploadClient->mUploadRef->deleteUploadTimer(id, TYPE_MAPPING_CHANNEL);
             }
             catch (CORBA::TRANSIENT&) {
                debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14966,6 +14967,12 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
    }
    DBConnectionPoolReleaseConnection(hdb);
    sendMessage(&msg);
+}
+
+bool ClientSession::checkDeleteUploadTimer(TCHAR* cHomeId)
+{
+   bool isDelete = true;
+   return isDelete;
 }
 
 INT32 ClientSession::getLastestInsertId(TCHAR * tbName)
