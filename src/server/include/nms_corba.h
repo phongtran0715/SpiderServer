@@ -53,7 +53,7 @@ class AgentCorbaServer
 {
 private:
    CORBA::Boolean bindObjectToName(CORBA::ORB_ptr, CORBA::Object_ptr);
-   INT32 getMaxId(TCHAR * tbName);
+   INT32 getMaxId(const TCHAR * tbName);
 public:
    void initCorba();
    bool initSuccess;
@@ -65,7 +65,7 @@ public:
 class AgentSide_i : public POA_SpiderCorba::AgentSide
 {
 private:
-   INT32 getMaxId(TCHAR * tbName);
+   INT32 getMaxId(const TCHAR * tbName);
    TCHAR* getClusterId(INT32 mappingId, INT32 mappingType, INT32 clusterType);
    TCHAR* getMappingTableNameByType(INT32 mappingType);
    TCHAR* getClusterTableNameByType(INT32 clusterType);

@@ -705,7 +705,7 @@ AgentCorbaServer::bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
 	return true;
 }
 
-INT32 AgentSide_i::getMaxId(TCHAR * tbName)
+INT32 AgentSide_i::getMaxId(const TCHAR * tbName)
 {
 	INT32 result = -1;
 	DB_RESULT hResult;

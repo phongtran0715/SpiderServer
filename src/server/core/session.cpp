@@ -14905,6 +14905,7 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
    if (hdb != NULL)
    {
       INT32 id = request->getFieldAsInt32(VID_MAPPING_CHANNEL_RECORD_ID);
+      TCHAR* cHomeId = request->getFieldAsString(VID_MAPPING_CHANNEL_HOME_ID);
       TCHAR* downloadId = request->getFieldAsString(VID_MAPPING_CHANNEL_DOWNLOAD_CLUSTER_ID);
       TCHAR* uploadId = request->getFieldAsString(VID_MAPPING_CHANNEL_UPLOAD_CLUSTER_ID);
       debugPrintf(6, _T("ClientSession::[%s] id = %d"), __FUNCTION__, id);
@@ -14945,7 +14946,11 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
             debugPrintf(6, _T("ClientSession::[%s] Init corba for upload client successful!"), __FUNCTION__);
             try {
                //TODO: check condition to delete upoad timer
-               //uploadClient->mUploadRef->deleteUploadTimer(id, TYPE_MAPPING_CHANNEL);
+               bool isDelete = checkDeleteUploadTimer(cHomeId);
+               if (isDelete)
+               {
+                  uploadClient->mUploadRef->deleteUploadTimer(cHomeId);
+               }
             }
             catch (CORBA::TRANSIENT&) {
                debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14971,7 +14976,39 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
 
 bool ClientSession::checkDeleteUploadTimer(TCHAR* cHomeId)
 {
+   debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  cHomeId = %s"), cHomeId);
    bool isDelete = true;
+   DB_RESULT hResult;
+   TCHAR query [MAX_DB_STRING];
+   const TCHAR* SPIDER_MAPPING_TABLE_NAME [] =
+   {
+      _T("channel_mapping")
+   };
+   DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+   INT32 numTable = sizeof(SPIDER_MAPPING_TABLE_NAME) / sizeof(SPIDER_MAPPING_TABLE_NAME[0]);
+   debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  numTable = %d"), numTable);
+   for (int i = 0; i < numTable; i++)
+   {
+      _sntprintf(query, sizeof query,  _T("SELECT COUNT(*) FROM %s WHERE HomeChannelId = '%s'"),
+                 SPIDER_MAPPING_TABLE_NAME[i], cHomeId);
+      debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  SQL query = %s"), query);
+      DB_STATEMENT hStmt = DBPrepare(hdb, query);
+      if (hStmt != NULL)
+      {
+         hResult = DBSelectPrepared(hStmt);
+         if (hResult != NULL)
+         {
+            INT32 count = DBGetFieldInt64(hResult, 0, 0);
+            if (count > 0)
+            {
+               isDelete = false;
+               break;
+            }
+            DBFreeResult(hResult);
+         }
+      }
+   }
+   DBConnectionPoolReleaseConnection(hdb);
    return isDelete;
 }
 
@@ -15360,7 +15397,7 @@ bool ClientSession::checkDeleteCondition(TCHAR * checkId, TCHAR * tbCheck, TCHAR
    return result;
 }
 
-INT32 ClientSession::getMaxId(TCHAR * tbName)
+INT32 ClientSession::getMaxId(const TCHAR * tbName)
 {
    INT32 result = -1;
    DB_RESULT hResult;

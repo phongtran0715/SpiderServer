@@ -792,9 +792,10 @@ private:
    TCHAR* getChannelNameById(TCHAR* channelId, TCHAR* tbName);
    bool checkDeleteCondition(TCHAR* checkId, TCHAR* tbCheck, TCHAR* fieldCheck);
    INT32 getLastestInsertId(TCHAR* tbName);
+   bool checkDeleteUploadTimer(TCHAR* cHomeId);
    AgentConnection* getAgentConnectionByObjectName(TCHAR* objectName);
    bool checkMappingIsExisted(TCHAR* cHomeId, TCHAR* cMonitorId);
-   INT32 getMaxId(TCHAR * tbName);
+   INT32 getMaxId(const TCHAR * tbName);
 
 public:
    ClientSession(SOCKET hSocket, const InetAddress& addr);
