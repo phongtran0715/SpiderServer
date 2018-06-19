@@ -1308,8 +1308,11 @@ typedef struct
 #define VID_SPIDER_CLUSTER_NAME                    ((UINT32)1104)
 #define VID_SPIDER_CLUSTER_IP_ADDRESS              ((UINT32)1105)
 #define VID_SPIDER_CLUSTER_PORT                    ((UINT32)1106)
-#define VID_SPIDER_CLUSTER_TYPE                    ((UINT32)1107)
+#define VID_SPIDER_CLUSTER_USER_NAME               ((UINT32)1107)
+#define VID_SPIDER_CLUSTER_PASSWORD                ((UINT32)1108)
+#define VID_SPIDER_CLUSTER_TYPE                    ((UINT32)1109)
 #define VID_SPIDER_CLUSTER_END                     ((UINT32)1120)
+
 //end cluster variable
 
 #define VID_SPIDER_END              ((UINT32)2000)

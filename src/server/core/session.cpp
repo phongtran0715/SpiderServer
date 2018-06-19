@@ -14112,13 +14112,13 @@ void ClientSession::getGoogleAccount(NXCPMessage *request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
-            msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            //Id
-            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //UserName
-            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //API
-            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    //Client Secrect
-            msg.setField(dwId + 4, DBGetField(hResult, i, 4, NULL, 0));    //Client Id
-            msg.setField(dwId + 5, DBGetFieldInt64(hResult, i, 5));        //Account Type
-            msg.setField(dwId + 6, DBGetField(hResult, i, 6, NULL, 0));    //AppName
+            msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            //id
+            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //user_name
+            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //api
+            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    //client_secret
+            msg.setField(dwId + 4, DBGetField(hResult, i, 4, NULL, 0));    //client_id
+            msg.setField(dwId + 5, DBGetFieldInt64(hResult, i, 5));        //account_type
+            msg.setField(dwId + 6, DBGetField(hResult, i, 6, NULL, 0));    //app_name
          }
          DBFreeResult(hResult);
       }
@@ -14139,7 +14139,7 @@ void ClientSession::getHomeChannels(NXCPMessage *request)
    msg.setId(request->getId());
 
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT * FROM home_channel_list"));
+   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT id, channel_id, channel_name, google_account_id FROM home_channel"));
    if (hStmt != NULL)
    {
       hResult = DBSelectPrepared(hStmt);
@@ -14151,15 +14151,9 @@ void ClientSession::getHomeChannels(NXCPMessage *request)
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
             msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            //id
-            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //Channel ID
-            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //ChannelName
-            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    //GoogleAccount
-            msg.setField(dwId + 4, DBGetField(hResult, i, 4, NULL, 0));    //VideoIntro
-            msg.setField(dwId + 5, DBGetField(hResult, i, 5, NULL, 0));    //VideoOutro
-            msg.setField(dwId + 6, DBGetField(hResult, i, 6, NULL, 0));    //Logo
-            msg.setField(dwId + 7, DBGetField(hResult, i, 7, NULL, 0));    //DescriptionTemplate
-            msg.setField(dwId + 8, DBGetField(hResult, i, 8, NULL, 0));    //TitleTemplate
-            msg.setField(dwId + 9, DBGetField(hResult, i, 9, NULL, 0));    //TagsTemplate
+            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //channel_id
+            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //channel_name
+            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    //google_account_id
          }
          DBFreeResult(hResult);
       }
@@ -14180,7 +14174,7 @@ void ClientSession::getMonitorChannels(NXCPMessage *request)
    msg.setId(request->getId());
 
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT * FROM monitor_channel_list"));
+   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT * FROM monitor_channel"));
    if (hStmt != NULL)
    {
       hResult = DBSelectPrepared(hStmt);
@@ -14192,8 +14186,8 @@ void ClientSession::getMonitorChannels(NXCPMessage *request)
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
             msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            //id
-            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //Channel ID
-            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //ChannelName
+            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //channel_id
+            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //channel_name
          }
          DBFreeResult(hResult);
       }
@@ -14284,7 +14278,7 @@ void ClientSession::createGoogleAccount(NXCPMessage *request)
       UINT32 accountType = request->getFieldAsUInt32(VID_GOOGLE_ACCOUNT_TYPE);
       TCHAR* appName = request->getFieldAsString(VID_GOOGLE_APP_NAME);
 
-      hStmt = DBPrepare(hdb, _T("INSERT INTO google_account (UserName,Api,ClientSecret,ClientId, AccountType,AppName) VALUES (?,?,?,?,?,?)"));
+      hStmt = DBPrepare(hdb, _T("INSERT INTO google_account (user_name, api, client_secret, client_id, account_type, app_name) VALUES (?,?,?,?,?,?)"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)userName, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)api, DB_BIND_TRANSIENT);
       DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)clientSecret, DB_BIND_TRANSIENT);
@@ -14318,15 +14312,13 @@ void ClientSession::createHomeChannel(NXCPMessage *request)
    {
       // Prepare and execute INSERT or UPDATE query
       TCHAR* cId = request->getFieldAsString(VID_HOME_CHANNEL_ID);
-      TCHAR* cName = request->getFieldAsString(VID_HOME_CHANNEL_NAME);
-      TCHAR* googleAcc = request->getFieldAsString(VID_HOME_CHANNEL_GACCOUNT);
+      TCHAR* cName = request->getFieldAsString(VID_HOME_CHANNEL_NAME);;
       INT32 accountId = request->getFieldAsInt32(VID_HOME_CHANNEL_ACCOUNT_ID);
 
-      hStmt = DBPrepare(hdb, _T("INSERT INTO home_channel_list (ChannelId, ChannelName, GoogleAccount, AccountId) VALUES (?,?,?,?)"));
+      hStmt = DBPrepare(hdb, _T("INSERT INTO home_channel (channel_id, channel_name, google_account_Id) VALUES (?,?,?)"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)googleAcc, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_INTEGER, accountId);
+      DBBind(hStmt, 3, DB_SQLTYPE_INTEGER, accountId);
       bool success = DBExecute(hStmt);
       if (success == true)
       {
@@ -14356,7 +14348,7 @@ void ClientSession::createMonitorChannel(NXCPMessage *request)
       TCHAR* cId = request->getFieldAsString(VID_MONITOR_CHANNEL_ID);
       TCHAR* cName = request->getFieldAsString(VID_MONITOR_CHANNEL_NAME);
 
-      hStmt = DBPrepare(hdb, _T("INSERT INTO monitor_channel_list (ChannelId, ChannelName) VALUES (?,?)"));
+      hStmt = DBPrepare(hdb, _T("INSERT INTO monitor_channel (channel_id, channel_name) VALUES (?,?)"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
       bool success = DBExecute(hStmt);
@@ -14614,8 +14606,8 @@ void ClientSession::modifyGoogleAccount(NXCPMessage * request)
       UINT32 accountType = request->getFieldAsUInt32(VID_GOOGLE_ACCOUNT_TYPE);
       TCHAR* appName = request->getFieldAsString(VID_GOOGLE_APP_NAME);
 
-      hStmt = DBPrepare(hdb, _T("UPDATE google_account SET UserName = ?, Api = ?, ClientSecret = ?, ")
-                        _T(" ClientId = ?, AccountType = ?, AppName = ? WHERE Id = ?"));
+      hStmt = DBPrepare(hdb, _T("UPDATE google_account SET user_name = ?, api = ?, client_secret = ?, ")
+                        _T(" client_id = ?, account_type = ?, app_name = ? WHERE id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)userName, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)api, DB_BIND_TRANSIENT);
       DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)clientSecret, DB_BIND_TRANSIENT);
@@ -14653,16 +14645,14 @@ void ClientSession::modifyHomeChannel(NXCPMessage * request)
       INT32 id = request->getFieldAsInt32(VID_HOME_CHANNEL_RECORD_ID);
       TCHAR* cId = request->getFieldAsString(VID_HOME_CHANNEL_ID);
       TCHAR* cName = request->getFieldAsString(VID_HOME_CHANNEL_NAME);
-      TCHAR* googleAcc = request->getFieldAsString(VID_HOME_CHANNEL_GACCOUNT);
       INT32 accountId = request->getFieldAsInt32(VID_HOME_CHANNEL_ACCOUNT_ID);
 
-      hStmt = DBPrepare(hdb, _T("UPDATE home_channel_list SET ChannelId = ?, ChannelName = ?, ")
-                        _T(" GoogleAccount= ?, AccountId = ? WHERE Id = ?"));
+      hStmt = DBPrepare(hdb, _T("UPDATE home_channel SET channel_id = ?, channel_name = ?, ")
+                        _T(" google_account_id = ? WHERE id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)googleAcc, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_INTEGER, accountId);
-      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, (INT32)id);
+      DBBind(hStmt, 3, DB_SQLTYPE_INTEGER, accountId);
+      DBBind(hStmt, 4, DB_SQLTYPE_INTEGER, (INT32)id);
       bool success = DBExecute(hStmt);
       if (success == true)
       {
@@ -14693,7 +14683,7 @@ void ClientSession::modifyMonitorChannel(NXCPMessage * request)
       TCHAR* cId = request->getFieldAsString(VID_MONITOR_CHANNEL_ID);
       TCHAR* cName = request->getFieldAsString(VID_MONITOR_CHANNEL_NAME);
 
-      hStmt = DBPrepare(hdb, _T("UPDATE monitor_channel_list SET ChannelId = ?, ChannelName = ? WHERE Id = ?"));
+      hStmt = DBPrepare(hdb, _T("UPDATE monitor_channel SET channel_id = ?, channel_name = ? WHERE id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
       DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
       DBBind(hStmt, 3, DB_SQLTYPE_INTEGER, (INT32)id);
@@ -14799,7 +14789,7 @@ void ClientSession::deleteGoogleAccount(NXCPMessage * request)
    {
       INT32 id = request->getFieldAsInt32(VID_GOOGLE_RECORD_ID);
       debugPrintf(6, _T("ClientSession::[%s] id = %d"), __FUNCTION__, id);
-      hStmt = DBPrepare(hdb, _T("DELETE FROM google_account WHERE Id = ?"));
+      hStmt = DBPrepare(hdb, _T("DELETE FROM google_account WHERE id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)id);
       bool success = DBExecute(hStmt);
       if (success == true)
@@ -14827,14 +14817,15 @@ void ClientSession::deleteHomeChannel(NXCPMessage * request)
 
    INT32 id = request->getFieldAsInt32(VID_HOME_CHANNEL_RECORD_ID);
    TCHAR* cHomeId = request->getFieldAsString(VID_HOME_CHANNEL_ID);
-   bool isDelete = checkDeleteCondition(cHomeId , _T("channel_mapping"), _T("HomeChannelId"));
+   //bool isDelete = checkDeleteCondition(cHomeId , _T("channel_mapping"), _T("HomeChannelId"));
+   bool isDelete = true;
    if (isDelete)
    {
       if (hdb != NULL)
       {
 
          debugPrintf(6, _T("ClientSession::[%s] id = %d"), __FUNCTION__, id);
-         hStmt = DBPrepare(hdb, _T("DELETE FROM home_channel_list WHERE Id = ?"));
+         hStmt = DBPrepare(hdb, _T("DELETE FROM home_channel WHERE id = ?"));
          DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)id);
          bool success = DBExecute(hStmt);
          if (success == true)
@@ -14866,13 +14857,14 @@ void ClientSession::deleteMonitorAccount(NXCPMessage * request)
    msg.setId(request->getId());
    INT32 id = request->getFieldAsInt32(VID_MONITOR_CHANNEL_RECORD_ID);
    TCHAR* cMonitorId = request->getFieldAsString(VID_MONITOR_CHANNEL_ID);
-   bool isDelete = checkDeleteCondition(cMonitorId, _T("channel_mapping"),  _T("MonitorChannelId"));
+   //bool isDelete = checkDeleteCondition(cMonitorId, _T("channel_mapping"),  _T("MonitorChannelId"));
+   bool isDelete = true;
    if (isDelete)
    {
       if (hdb != NULL)
       {
          debugPrintf(6, _T("ClientSession::[%s] id = %d"), __FUNCTION__, id);
-         hStmt = DBPrepare(hdb, _T("DELETE FROM monitor_channel_list WHERE Id = ?"));
+         hStmt = DBPrepare(hdb, _T("DELETE FROM monitor_channel WHERE id = ?"));
          DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)id);
          bool success = DBExecute(hStmt);
          if (success == true)
@@ -15103,22 +15095,11 @@ void ClientSession::getCluster(NXCPMessage * request)
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
    DB_STATEMENT hStmt ;
    UINT32 clusterType = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_TYPE);
-   switch (clusterType)
-   {
-   case TYPE_DOWNLOADED:
-      hStmt = DBPrepare(hdb, _T("SELECT * FROM download_cluster"));
-      break;
-   case TYPE_RENDERED:
-      hStmt = DBPrepare(hdb, _T("SELECT * FROM render_cluster"));
-      break;
-   case TYPE_UPLOADED:
-      hStmt = DBPrepare(hdb, _T("SELECT * FROM upload_cluster"));
-      break;
-   default:
-      break;
-   }
+   hStmt = DBPrepare(hdb, _T("SELECT id, cluster_id, cluster_name, ip_address, port, ")
+                     _T(" user_name, password FROM cluster_info WHERE cluster_type = ?"));
    if (hStmt != NULL)
    {
+      DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, clusterType);
       hResult = DBSelectPrepared(hStmt);
       if (hResult != NULL)
       {
@@ -15127,11 +15108,13 @@ void ClientSession::getCluster(NXCPMessage * request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
-            msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            // Record ID
-            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    // Cluster ID
-            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    // Cluster Name
-            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    // IP Address
-            msg.setField(dwId + 4, DBGetFieldInt64(hResult, i, 4));        // Port
+            msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            // id
+            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    // cluster_id
+            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    // cluster_name
+            msg.setField(dwId + 3, DBGetField(hResult, i, 3, NULL, 0));    // ip_address
+            msg.setField(dwId + 4, DBGetFieldInt64(hResult, i, 4));        // port
+            msg.setField(dwId + 5, DBGetField(hResult, i, 5, NULL, 0));    // user_name
+            msg.setField(dwId + 6, DBGetField(hResult, i, 6, NULL, 0));    // password
          }
          DBFreeResult(hResult);
       }
@@ -15157,25 +15140,19 @@ void ClientSession::createCluster(NXCPMessage * request)
       TCHAR* clusterName = request->getFieldAsString(VID_SPIDER_CLUSTER_NAME);
       TCHAR* ipAddress = request->getFieldAsString(VID_SPIDER_CLUSTER_IP_ADDRESS);
       UINT32 port = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_PORT);
+      TCHAR* userName = request->getFieldAsString(VID_SPIDER_CLUSTER_USER_NAME);
+      TCHAR* password = request->getFieldAsString(VID_SPIDER_CLUSTER_PASSWORD);
       UINT32 clusterType = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_TYPE);
-      switch (clusterType)
-      {
-      case TYPE_DOWNLOADED:
-         hStmt = DBPrepare(hdb, _T("INSERT INTO download_cluster (ClusterId, ClusterName, IpAddress, Port) VALUES (?,?,?,?)"));
-         break;
-      case TYPE_RENDERED:
-         hStmt = DBPrepare(hdb, _T("INSERT INTO render_cluster (ClusterId, ClusterName, IpAddress, Port) VALUES (?,?,?,?)"));
-         break;
-      case TYPE_UPLOADED:
-         hStmt = DBPrepare(hdb, _T("INSERT INTO upload_cluster (ClusterId, ClusterName, IpAddress, Port) VALUES (?,?,?,?)"));
-         break;
-      default:
-         break;
-      }
+      hStmt = DBPrepare(hdb, _T("INSERT INTO cluster_info (cluster_id, cluster_type, cluster_name, ")
+                        _T("ip_address, port, user_name, password) VALUES (?,?,?,?,?,?,?)"));
+
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterId, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterName, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)ipAddress, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_INTEGER, (INT32)port);
+      DBBind(hStmt, 2, DB_SQLTYPE_INTEGER, (INT32)clusterType);
+      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterName, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)ipAddress, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, (INT32)port);
+      DBBind(hStmt, 6, DB_SQLTYPE_VARCHAR, (const TCHAR *)userName, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 7, DB_SQLTYPE_VARCHAR, (const TCHAR *)password, DB_BIND_TRANSIENT);
       bool success = DBExecute(hStmt);
       if (success == true)
       {
@@ -15208,28 +15185,20 @@ void ClientSession::modifyCluster(NXCPMessage * request)
       TCHAR* clusterName = request->getFieldAsString(VID_SPIDER_CLUSTER_NAME);
       TCHAR* ipAddress = request->getFieldAsString(VID_SPIDER_CLUSTER_IP_ADDRESS);
       UINT32 port = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_PORT);
+      TCHAR* userName = request->getFieldAsString(VID_SPIDER_CLUSTER_USER_NAME);
+      TCHAR* password = request->getFieldAsString(VID_SPIDER_CLUSTER_PASSWORD);
       UINT32 clusterType = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_TYPE);
-      switch (clusterType)
-      {
-      case TYPE_DOWNLOADED:
-         hStmt = DBPrepare(hdb, _T("UPDATE download_cluster SET ClusterId = ?, ClusterName = ?, ")
-                           _T("  IpAddress = ?, Port = ? WHERE Id = ?"));
-         break;
-      case TYPE_RENDERED:
-         hStmt = DBPrepare(hdb, _T("UPDATE render_cluster SET ClusterId = ?, ClusterName = ?, ")
-                           _T(" IpAddress = ?, Port = ? WHERE Id = ?"));
-         break;
-      case TYPE_UPLOADED:
-         hStmt = DBPrepare(hdb, _T("UPDATE upload_cluster SET ClusterId = ?, ClusterName = ?, ")
-                           _T(" IpAddress = ?, Port = ? WHERE Id = ?"));
-         break;
-      }
+      hStmt = DBPrepare(hdb, _T("UPDATE cluster_info SET cluster_id = ?, cluster_type = ?, cluster_name = ?, ")
+                        _T("  ip_address = ?, port = ?, user_name = ?, password = ? WHERE id = ?"));
 
       DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterId, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterName, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)ipAddress, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_INTEGER, (INT32)port);
-      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, recordId);
+      DBBind(hStmt, 2, DB_SQLTYPE_INTEGER, (INT32)clusterType);
+      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)clusterName, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)ipAddress, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, (INT32)port);
+      DBBind(hStmt, 6, DB_SQLTYPE_VARCHAR, (const TCHAR *)userName, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 7, DB_SQLTYPE_VARCHAR, (const TCHAR *)password, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, recordId);
       bool success = DBExecute(hStmt);
       if (success == true)
       {
@@ -15259,20 +15228,7 @@ void ClientSession::deleteCluster(NXCPMessage * request)
    {
       INT32 id = request->getFieldAsInt32(VID_SPIDER_CLUSTER_RECORD_ID);
       UINT32 clusterType = request->getFieldAsUInt32(VID_SPIDER_CLUSTER_TYPE);
-      switch (clusterType)
-      {
-      case TYPE_DOWNLOADED:
-         hStmt = DBPrepare(hdb, _T("DELETE FROM download_cluster WHERE Id = ?"));
-         break;
-      case TYPE_RENDERED:
-         hStmt = DBPrepare(hdb, _T("DELETE FROM render_cluster WHERE Id = ?"));
-         break;
-      case TYPE_UPLOADED:
-         hStmt = DBPrepare(hdb, _T("DELETE FROM upload_cluster WHERE Id = ?"));
-         break;
-      default:
-         break;
-      }
+      hStmt = DBPrepare(hdb, _T("DELETE FROM cluster_info WHERE id = ?"));
 
       DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)id);
       bool success = DBExecute(hStmt);

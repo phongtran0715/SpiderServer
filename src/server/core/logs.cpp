@@ -100,32 +100,32 @@ static NXCORE_LOG s_logs[] =
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("GoogleAccount"), _T("google_account"), _T("Id"), _T("UserName"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("GoogleAccount"), _T("google_account"), _T("id"), _T("user_name"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("Id"), _T("ID"), LC_INTEGER },
-			{ _T("UserName"), _T("User Name"), LC_TEXT },
-			{ _T("Api"), _T("API Key"), LC_TEXT },
-			{ _T("ClientSecret"), _T("ClientSecret"), LC_TEXT },
-			{ _T("ClientId"), _T("ClientId"), LC_TEXT },
-			{ _T("AccountType"), _T("Account Type"), LC_INTEGER },
-			{ _T("AppName"), _T("App Name"), LC_TEXT },
+			{ _T("id"), _T("ID"), LC_INTEGER },
+			{ _T("user_name"), _T("User Name"), LC_TEXT },
+			{ _T("api"), _T("API Key"), LC_TEXT },
+			{ _T("client_secret"), _T("ClientSecret"), LC_TEXT },
+			{ _T("client_id"), _T("ClientId"), LC_TEXT },
+			{ _T("account_type"), _T("Account Type"), LC_INTEGER },
+			{ _T("app_name"), _T("App Name"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("HomeChannel"), _T("home_channel_list"), _T("Id"), _T("ChannelId"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("HomeChannel"), _T("home_channel"), _T("id"), _T("channel_id"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("Id"), _T("ID"), LC_INTEGER },
-			{ _T("ChannelId"), _T("Channel Id"), LC_TEXT },
-			{ _T("ChannelName"), _T("Channel Name"), LC_TEXT },
-			{ _T("GoogleAccount"), _T("Google Account"), LC_TEXT },
+			{ _T("id"), _T("ID"), LC_INTEGER },
+			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
+			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
+			{ _T("google_account_Id"), _T("Google Account ID"), LC_INTEGER },
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("MonitorChannel"), _T("monitor_channel_list"), _T("Id"), _T("ChannelId"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("MonitorChannel"), _T("monitor_channel"), _T("Id"), _T("ChannelId"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("Id"), _T("ID"), LC_INTEGER },
-			{ _T("ChannelId"), _T("Channel Id"), LC_TEXT },
-			{ _T("ChannelName"), _T("Channel Name"), LC_TEXT },
+			{ _T("id"), _T("ID"), LC_INTEGER },
+			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
+			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},
