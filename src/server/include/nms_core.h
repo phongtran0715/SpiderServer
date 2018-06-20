@@ -768,7 +768,7 @@ private:
    void getGoogleAccount(NXCPMessage *request);
    void getHomeChannels(NXCPMessage *request);
    void getMonitorChannels(NXCPMessage *request);
-   void getMappingChannels(NXCPMessage *request);
+   void getMappingConfig(NXCPMessage *request);
    void createGoogleAccount(NXCPMessage *request);
    void createHomeChannel(NXCPMessage *request);
    void createMonitorChannel(NXCPMessage *request);
@@ -785,10 +785,10 @@ private:
    void createCluster(NXCPMessage *request);
    void modifyCluster(NXCPMessage *request);
    void deleteCluster(NXCPMessage *request);
-   void createSpiderMappingConfig(UINT32 mappingId, INT32 mappingType, NXCPMessage *request);
-   void modifySpiderMappingConfig(UINT32 mappingId, INT32 mappingType, NXCPMessage *request);
-   void deleteSpiderMappingConfig(UINT32 mappingId, INT32 mappingType);
-   void deleteVideoContainer(UINT32 mappingId, INT32 mappingType);
+   void createSpiderMappingConfig(UINT32 mappingId, NXCPMessage *request);
+   void modifySpiderMappingConfig(UINT32 mappingId, NXCPMessage *request);
+   void deleteSpiderMappingConfig(UINT32 mappingId);
+   void deleteVideoContainer(UINT32 mappingId);
    TCHAR* getChannelNameById(TCHAR* channelId, TCHAR* tbName);
    bool checkDeleteCondition(TCHAR* checkId, TCHAR* tbCheck, TCHAR* fieldCheck);
    INT32 getLastestInsertId(TCHAR* tbName);

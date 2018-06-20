@@ -135,8 +135,6 @@ _CORBA_MODULE_BEG
 
       ::CORBA::Long mappingId;
 
-      ::CORBA::Long mappingType;
-
       ::CORBA::Long processStatus;
 
       ::CORBA::Long license;
@@ -157,9 +155,11 @@ _CORBA_MODULE_BEG
       
       ::CORBA::WString_member cHomeId;
 
-      ::CORBA::WString_member cMonitorId;
+      ::CORBA::WString_member monitorContent;
 
       ::CORBA::WString_member downloadClusterId;
+
+      ::CORBA::Long mappingType;
 
       ::CORBA::Long timerInterval;
 
@@ -392,9 +392,9 @@ _CORBA_MODULE_BEG
   {
   public:
     // IDL operations
-    ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg);
-    ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg);
-    ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType);
+    ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg);
+    ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg);
+    ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId);
     ::CORBA::Boolean deleteDownloadedVideo(::CORBA::Long jobId);
 
     // Constructors
@@ -430,9 +430,9 @@ _CORBA_MODULE_BEG
   public:
     virtual ~_impl_DownloadSide();
 
-    virtual ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg) = 0;
-    virtual ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg) = 0;
-    virtual ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId, ::CORBA::Long timerType) = 0;
+    virtual ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg) = 0;
+    virtual ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, const ::SpiderCorba::SpiderDefine::DownloadConfig& downloadCfg) = 0;
+    virtual ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId) = 0;
     virtual ::CORBA::Boolean deleteDownloadedVideo(::CORBA::Long jobId) = 0;
     
   public:  // Really protected, workaround for xlC
@@ -751,17 +751,17 @@ _CORBA_MODULE_BEG
   public:
     // IDL operations
     void onDownloadStartup(const ::CORBA::WChar* downloadClusterId);
-    ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-    void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::LongLong lastSyncTime);
+    ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId);
+    void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime);
     void updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     void onRenderStartup(const ::CORBA::WChar* renderClusterId);
-    SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType);
+    SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
     void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
-    SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType);
+    SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId);
     void updateUploadedVideo(::CORBA::Long jobId);
-    SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-    SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::Long clusterType);
+    SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId);
+    SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType);
 
     // Constructors
     inline _objref_AgentSide()  { _PR_setobj(0); }  // nil
@@ -797,17 +797,17 @@ _CORBA_MODULE_BEG
     virtual ~_impl_AgentSide();
 
     virtual void onDownloadStartup(const ::CORBA::WChar* downloadClusterId) = 0;
-    virtual ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId, ::CORBA::Long mappingType) = 0;
-    virtual void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::LongLong lastSyncTime) = 0;
+    virtual ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId) = 0;
+    virtual void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime) = 0;
     virtual void updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual void onRenderStartup(const ::CORBA::WChar* renderClusterId) = 0;
-    virtual SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType) = 0;
+    virtual SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId) = 0;
     virtual void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual void onUploadStartup(const ::CORBA::WChar* uploadClusterId) = 0;
-    virtual SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType) = 0;
+    virtual SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId) = 0;
     virtual void updateUploadedVideo(::CORBA::Long jobId) = 0;
-    virtual SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType) = 0;
-    virtual SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::Long clusterType) = 0;
+    virtual SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId) = 0;
+    virtual SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType) = 0;
     
   public:  // Really protected, workaround for xlC
     virtual _CORBA_Boolean _dispatch(omniCallHandle&);

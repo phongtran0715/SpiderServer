@@ -1278,15 +1278,17 @@ typedef struct
 //mapping channel variable
 #define VID_MAPPING_CHANNEL_START                  ((UINT32)1046)
 #define VID_MAPPING_CHANNEL_RECORD_ID              ((UINT32)1047)
-#define VID_MAPPING_CHANNEL_HOME_ID                ((UINT32)1048)
-#define VID_MAPPING_CHANNEL_MONITOR_ID             ((UINT32)1049)
+#define VID_MAPPING_CHANNEL_TYPE                   ((UINT32)1048)
+#define VID_MAPPING_CHANNEL_STATUS_SYNC            ((UINT32)1049)
 #define VID_MAPPING_CHANNEL_TIME_SYNC              ((UINT32)1050)
-#define VID_MAPPING_CHANNEL_STATUS_SYNC            ((UINT32)1051)
-#define VID_MAPPING_CHANNEL_ACTION                 ((UINT32)1052)
+#define VID_MAPPING_CHANNEL_HOME_ID                ((UINT32)1051)
+#define VID_MAPPING_CHANNEL_MONITOR_CONTENT        ((UINT32)1052)
 #define VID_MAPPING_CHANNEL_LAST_SYNC_TIME         ((UINT32)1053)
 #define VID_MAPPING_CHANNEL_DOWNLOAD_CLUSTER_ID    ((UINT32)1054)
 #define VID_MAPPING_CHANNEL_RENDER_CLUSTER_ID      ((UINT32)1055)
 #define VID_MAPPING_CHANNEL_UPLOAD_CLUSTER_ID      ((UINT32)1056)
+
+
 #define VID_VIDEO_INTRO                            ((UINT32)1057)
 #define VID_VIDEO_OUTRO                            ((UINT32)1058)
 #define VID_VIDEO_LOGO                             ((UINT32)1059)

@@ -100,9 +100,8 @@ static NXCORE_LOG s_logs[] =
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("GoogleAccount"), _T("google_account"), _T("id"), _T("user_name"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("GoogleAccount"), _T("google_account"), _T("user_name"), _T("user_name"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("id"), _T("ID"), LC_INTEGER },
 			{ _T("user_name"), _T("User Name"), LC_TEXT },
 			{ _T("api"), _T("API Key"), LC_TEXT },
 			{ _T("client_secret"), _T("ClientSecret"), LC_TEXT },
@@ -112,35 +111,33 @@ static NXCORE_LOG s_logs[] =
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("HomeChannel"), _T("home_channel"), _T("id"), _T("channel_id"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("HomeChannel"), _T("home_channel"), _T("channel_id"), _T("channel_id"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("id"), _T("ID"), LC_INTEGER },
 			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
 			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
-			{ _T("google_account_Id"), _T("Google Account ID"), LC_INTEGER },
+			{ _T("google_account_user_name"), _T("Google User Name"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},
-	{	_T("MonitorChannel"), _T("monitor_channel"), _T("Id"), _T("ChannelId"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("MonitorChannel"), _T("monitor_channel"), _T("channel_id"), _T("channel_id"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("id"), _T("ID"), LC_INTEGER },
 			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
 			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},
 
-	{	_T("ChannelMapping"), _T("channel_mapping"), _T("Id"), _T("HomeChannelId"), SYSTEM_ACCESS_VIEW_SYSLOG,
+	{	_T("MappingList"), _T("mapping_list"), _T("id"), _T("mapping_type"), SYSTEM_ACCESS_VIEW_SYSLOG,
 		{
-			{ _T("Id"), _T("ID"), LC_INTEGER },
-			{ _T("HomeChannelId"), _T("Home Channel Id"), LC_TEXT },
-			{ _T("MonitorChannelId"), _T("Monitor Channel Name"), LC_TEXT },
-			{ _T("TimeIntervalSync"), _T("Interval"), LC_INTEGER },
-			{ _T("StatusSync"), _T("Status"), LC_INTEGER },
-			{ _T("LastSyncTime"), _T("LastSyncTime"), LC_INTEGER },
-			{ _T("DownloadClusterId"), _T("DownloadClusterId"), LC_TEXT },
-			{ _T("RenderClusterId"), _T("RenderClusterId"), LC_TEXT },
-			{ _T("UploadClusterId"), _T("UploadClusterId"), LC_TEXT },
+			{ _T("id"), _T("ID"), LC_INTEGER },
+			{ _T("mapping_type"), _T("Mapping Type"), LC_INTEGER },
+			{ _T("status_sync"), _T("Sync Status"), LC_INTEGER},
+			{ _T("time_interval_sync"), _T("Interval"), LC_INTEGER },
+			{ _T("home_channel_id"), _T("Home channel Id"), LC_TEXT },
+			{ _T("monitor_content"), _T("Monitor Content"), LC_TEXT },
+			{ _T("download_cluster"), _T("Download Cluster"), LC_TEXT },
+			{ _T("render_cluster"), _T("Render Cluster"), LC_TEXT },
+			{ _T("upload_cluster"), _T("Upload CLuster"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},

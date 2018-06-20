@@ -66,28 +66,26 @@ class AgentSide_i : public POA_SpiderCorba::AgentSide
 {
 private:
    INT32 getMaxId(const TCHAR * tbName);
-   TCHAR* getClusterId(INT32 mappingId, INT32 mappingType, INT32 clusterType);
-   TCHAR* getMappingTableNameByType(INT32 mappingType);
-   TCHAR* getClusterTableNameByType(INT32 clusterType);
-   void createDownloadTimerByMapping(const ::CORBA::WChar* downloadClusterId, INT32 mappingType);
-   void createRenderJobByMapping(const ::CORBA::WChar* renderClusterId, INT32 mappingType);
-   void createUploadTimerByMapping(const ::CORBA::WChar* uploadClusterId, INT32 mappingType);
-   void createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId, INT32 mappingType);
-   TCHAR* getHomeChannelId(INT32 mappingId, INT32 mappingType);
+   TCHAR* getClusterId(INT32 mappingId, INT32 clusterType);
+   void createDownloadTimerByMapping(const ::CORBA::WChar* downloadClusterId);
+   void createRenderJobByMapping(const ::CORBA::WChar* renderClusterId);
+   void createUploadTimerByMapping(const ::CORBA::WChar* uploadClusterId);
+   void createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId);
+   TCHAR* getHomeChannelId(INT32 mappingId);
 
 public:
    void onDownloadStartup(const ::CORBA::WChar* downloadClusterId);
-   ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-   void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::LongLong lastSyncTime);
-   void updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
-   void onRenderStartup(const ::CORBA::WChar* renderClusterId);
-   ::SpiderCorba::SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-   void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
-   void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
-   ::SpiderCorba::SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-   void updateUploadedVideo(::CORBA::Long jobId);
-   ::SpiderCorba::SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType);
-   ::SpiderCorba::SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long mappingType, ::CORBA::Long clusterType);
+    ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId);
+    void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime);
+    void updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
+    void onRenderStartup(const ::CORBA::WChar* renderClusterId);
+    ::SpiderCorba::SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
+    void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
+    void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
+    ::SpiderCorba::SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId);
+    void updateUploadedVideo(::CORBA::Long jobId);
+    ::SpiderCorba::SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId);
+    ::SpiderCorba::SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType);
 };
 
 #endif /* _nms_corba_h_ */
