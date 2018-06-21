@@ -67,8 +67,6 @@ class AgentSide_i : public POA_SpiderCorba::AgentSide
 private:
    INT32 getMaxId(const TCHAR * tbName);
    TCHAR* getClusterId(INT32 mappingId, INT32 clusterType);
-   void createDownloadTimerByMapping(const ::CORBA::WChar* downloadClusterId);
-   void createRenderJobByMapping(const ::CORBA::WChar* renderClusterId);
    void createUploadTimerByMapping(const ::CORBA::WChar* uploadClusterId);
    void createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId);
    TCHAR* getHomeChannelId(INT32 mappingId);

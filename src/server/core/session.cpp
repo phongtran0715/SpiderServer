@@ -14437,7 +14437,6 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
             }
 
             //notify upload app
-            /*
             debugPrintf(6, _T("ClientSession1::[createMappingChannel] beginning notify to upload app"));
             SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadId);
             if (uploadClient->initSuccess)
@@ -14458,9 +14457,7 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
             } else {
                debugPrintf(1, _T("ClientSession::[%s] Init corba for upload client FALSE"), __FUNCTION__);
             }
-            */
          }
-
       }
       else
       {
@@ -14736,9 +14733,9 @@ void ClientSession::modifyMappingChannel(NXCPMessage * request)
       {
          msg.setField(VID_RCC, RCC_SUCCESS);
          //modify spider mapping config
-         
+
          modifySpiderMappingConfig(mappingId, request);
-         
+
          //notify information to download app
          debugPrintf(6, _T("ClientSession1::[modifyMappingChannel] beginning notify to download app"));
          SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadId);
@@ -14897,7 +14894,7 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
       TCHAR* cHomeId = request->getFieldAsString(VID_MAPPING_CHANNEL_HOME_ID);
       TCHAR* downloadId = request->getFieldAsString(VID_MAPPING_CHANNEL_DOWNLOAD_CLUSTER_ID);
       TCHAR* uploadId = request->getFieldAsString(VID_MAPPING_CHANNEL_UPLOAD_CLUSTER_ID);
-      
+
       deleteSpiderMappingConfig(mappingId);
       deleteVideoContainer(mappingId);
 
@@ -14929,7 +14926,7 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
             debugPrintf(1, _T("ClientSession::[%s] Init corba for download client FALSE"), __FUNCTION__);
          }
          //notify information to upload app
-         /*
+
          debugPrintf(6, _T("Beginning notify to upload app"));
          SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadId);
          if (uploadClient->initSuccess)
@@ -14955,7 +14952,6 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
          } else {
             debugPrintf(1, _T("ClientSession::[%s] Init corba for upload client FALSE"), __FUNCTION__);
          }
-         */
       }
       else
       {
@@ -14969,35 +14965,24 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
 bool ClientSession::checkDeleteUploadTimer(TCHAR* cHomeId)
 {
    debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  cHomeId = %s"), cHomeId);
-   bool isDelete = true;
+   bool isDelete = false;
    DB_RESULT hResult;
    TCHAR query [MAX_DB_STRING];
-   const TCHAR* SPIDER_MAPPING_TABLE_NAME [] =
-   {
-      _T("channel_mapping")
-   };
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-   INT32 numTable = sizeof(SPIDER_MAPPING_TABLE_NAME) / sizeof(SPIDER_MAPPING_TABLE_NAME[0]);
-   debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  numTable = %d"), numTable);
-   for (int i = 0; i < numTable; i++)
+   _sntprintf(query, sizeof query,  _T("SELECT COUNT(*) FROM mapping_list WHERE home_channel_id = '%s'"), cHomeId);
+   debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  SQL query = %s"), query);
+   DB_STATEMENT hStmt = DBPrepare(hdb, query);
+   if (hStmt != NULL)
    {
-      _sntprintf(query, sizeof query,  _T("SELECT COUNT(*) FROM %s WHERE HomeChannelId = '%s'"),
-                 SPIDER_MAPPING_TABLE_NAME[i], cHomeId);
-      debugPrintf(6, _T("ClientSession::[checkDeleteUploadTimer]  SQL query = %s"), query);
-      DB_STATEMENT hStmt = DBPrepare(hdb, query);
-      if (hStmt != NULL)
+      hResult = DBSelectPrepared(hStmt);
+      if (hResult != NULL)
       {
-         hResult = DBSelectPrepared(hStmt);
-         if (hResult != NULL)
+         INT32 count = DBGetFieldInt64(hResult, 0, 0);
+         if (count == 0)
          {
-            INT32 count = DBGetFieldInt64(hResult, 0, 0);
-            if (count > 0)
-            {
-               isDelete = false;
-               break;
-            }
-            DBFreeResult(hResult);
+            isDelete = true;
          }
+         DBFreeResult(hResult);
       }
    }
    DBConnectionPoolReleaseConnection(hdb);
