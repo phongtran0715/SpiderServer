@@ -73,17 +73,23 @@ private:
 
 public:
    void onDownloadStartup(const ::CORBA::WChar* downloadClusterId);
-    ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId);
-    void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime);
-    void updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
-    void onRenderStartup(const ::CORBA::WChar* renderClusterId);
-    ::SpiderCorba::SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
-    void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
-    void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
-    ::SpiderCorba::SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId);
-    void updateUploadedVideo(::CORBA::Long jobId);
-    ::SpiderCorba::SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId);
-    ::SpiderCorba::SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType);
+   ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId);
+   ::SpiderCorba::SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId);
+   ::SpiderCorba::SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId);
+   void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime);
+   void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
+
+
+   void onRenderStartup(const ::CORBA::WChar* renderClusterId);
+   ::SpiderCorba::SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
+
+   void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
+   ::SpiderCorba::SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId);
+   void updateUploadedVideo(::CORBA::Long jobId);
+
+   ::SpiderCorba::SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId);
+   ::SpiderCorba::SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType);
+   void updateVideoContainer(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
 };
 
 #endif /* _nms_corba_h_ */

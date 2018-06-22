@@ -14,7 +14,7 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 	DB_RESULT hResult;
 	UINT32 i, dwNumRecords;
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-	_sntprintf(query, sizeof query, _T("SELECT id, mapping_type, time_interval_sync, home_channel_id, monitor_content")
+	_sntprintf(query, sizeof query, _T("SELECT id, mapping_type, time_interval_sync")
 	           _T(" FROM mapping_list WHERE status_sync = 1 AND download_cluster = '%s'"), (const TCHAR*)downloadClusterId);
 	DbgPrintf(6, _T("AgentSide_i::[onDownloadStartup] SQL query = %s"), query);
 	DB_STATEMENT hStmt = DBPrepare(hdb, query);
@@ -28,10 +28,7 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 			for (i = 0; i < dwNumRecords; i++)
 			{
 				INT32 jobId = DBGetFieldInt64(hResult, i, 0);
-				INT32 mappingType = DBGetFieldInt64(hResult, i, 1);
-				INT64 timeSync = DBGetFieldInt64(hResult, i, 2);
-				TCHAR* cHomeId = DBGetField(hResult, i, 3, NULL, 0);
-				TCHAR* monitorContent = DBGetField(hResult, i, 4, NULL, 0);
+				INT64 timeSync = DBGetFieldInt64(hResult, i, 1);
 				SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadClusterId);
 				if (downloadClient->initSuccess)
 				{
@@ -39,12 +36,7 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 					{
 						try
 						{
-							::SpiderCorba::SpiderDefine::DownloadConfig downloadCfg;
-							downloadCfg.cHomeId = ::CORBA::wstring_dup(cHomeId);
-							downloadCfg.monitorContent = ::CORBA::wstring_dup(monitorContent);
-							downloadCfg.timerInterval = timeSync;
-							downloadCfg.mappingType = mappingType;
-							downloadClient->mDownloadRef->createDownloadTimer(jobId, downloadCfg);
+							downloadClient->mDownloadRef->createDownloadTimer(jobId, timeSync);
 						}
 						catch (CORBA::TRANSIENT&) {
 							DbgPrintf(1, _T("AgentSide_i::[onDownloadStartup] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -343,7 +335,39 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 	DBConnectionPoolReleaseConnection(hdb);
 }
 
-void AgentSide_i::updateDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo)
+::SpiderCorba::SpiderDefine::CustomVideoInfor* AgentSide_i::getCustomVideo(const ::CORBA::WChar* downloadClusterId)
+{
+	DbgPrintf(6, _T("AgentSide_i::[getCustomVideo]"));
+	::SpiderCorba::SpiderDefine::CustomVideoInfor* customVideo = new ::SpiderCorba::SpiderDefine::CustomVideoInfor();
+	DB_RESULT hResult;
+	TCHAR query [MAX_DB_STRING];
+	UINT32 dwNumRecords;
+	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+
+	_sntprintf(query, sizeof query, _T("SELECT id, video_id, mapping_list_id FROM video_container WHERE mapping_list_id IN (SELECT id FROM mapping_list ")
+	           _T("WHERE download_cluster = '%s' AND status_sync = 1) AND process_status = 0 LIMIT 1"), (const TCHAR*) downloadClusterId);
+	DbgPrintf(6, _T("AgentSide_i::getCustomVideo : SQL query = %s"), query);
+	DB_STATEMENT hStmt = DBPrepare(hdb, query);
+	if (hStmt != NULL)
+	{
+		hResult = DBSelectPrepared(hStmt);
+		if (hResult != NULL)
+		{
+			dwNumRecords = DBGetNumRows(hResult);
+			if (dwNumRecords > 0)
+			{
+				customVideo->id = DBGetFieldInt64(hResult, 0, 0);
+				customVideo->videoId = CORBA::wstring_dup(DBGetField(hResult, 0, 1, NULL, 0));
+				customVideo->mappingId = DBGetFieldInt64(hResult, 0, 2);
+			}
+			DBFreeResult(hResult);
+		}
+	}
+	DBConnectionPoolReleaseConnection(hdb);
+	return customVideo;
+}
+
+void AgentSide_i::insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo)
 {
 	DbgPrintf(6, _T("AgentSide_i::[updateDownloadedVideo]"));
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
@@ -643,6 +667,47 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		}
 	}
 	DBConnectionPoolReleaseConnection(hdb);
+}
+
+::SpiderCorba::SpiderDefine::DownloadConfig* AgentSide_i::getDownloadConfig(::CORBA::Long mappingId)
+{
+	DbgPrintf(6, _T(" AgentSide_i::[getDownloadConfig] mappingId = %d"), mappingId);
+	::SpiderCorba::SpiderDefine::DownloadConfig* downloadCfg = new ::SpiderCorba::SpiderDefine::DownloadConfig();
+	DB_RESULT hResult;
+	INT32 dwNumRecords;
+	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+	TCHAR query [MAX_DB_STRING];
+	_sntprintf(query, sizeof query, _T("SELECT home_channel_id, monitor_content , mapping_type ")
+	           _T(" FROM mapping_list WHERE id = %d "), (INT32)mappingId);
+	DbgPrintf(6, _T(" AgentSide_i::[getDownloadConfig] SQL query = %s"), query);
+	DB_STATEMENT hStmt = DBPrepare(hdb, query);
+	if (hStmt != NULL)
+	{
+		hResult = DBSelectPrepared(hStmt);
+		if (hResult != NULL)
+		{
+			dwNumRecords = DBGetNumRows(hResult);
+			DbgPrintf(6, _T(" AgentSide_i::[getDownloadConfig] Num ber record = %d"), dwNumRecords);
+			if (dwNumRecords > 0)
+			{
+				downloadCfg->cHomeId = CORBA::wstring_dup(DBGetField(hResult, 0, 0, NULL, 0));
+				downloadCfg->monitorContent = CORBA::wstring_dup(DBGetField(hResult, 0, 1, NULL, 0));
+				downloadCfg->mappingType = DBGetFieldInt64(hResult, 0, 2);
+			} else {
+				DbgPrintf(1, _T(" AgentSide_i::[getDownloadConfig] Not found download config data in database with mappingId = %d "), mappingId);
+			}
+
+			DBFreeResult(hResult);
+		}
+		else {
+			DbgPrintf(1, _T(" AgentSide_i::[getDownloadConfig] result is NULL"));
+		}
+	}
+	else {
+		DbgPrintf(1, _T(" AgentSide_i::[getDownloadConfig] mappingId = Can not prepare query command"));
+	}
+	DBConnectionPoolReleaseConnection(hdb);
+	return downloadCfg;
 }
 
 ::SpiderCorba::SpiderDefine::RenderConfig* AgentSide_i::getRenderConfig(::CORBA::Long mappingId)

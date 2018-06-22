@@ -1413,7 +1413,7 @@ void ClientSession::processingThread()
          deleteHomeChannel(pMsg);
          break;
       case CMD_DEL_MONITOR_CHANNEL:
-         deleteMonitorAccount(pMsg);
+         deleteMonitorChannel(pMsg);
          break;
       case CMD_DEL_MAPPING_CHANNEL:
          deleteMappingChannel(pMsg);
@@ -14172,7 +14172,7 @@ void ClientSession::getMonitorChannels(NXCPMessage *request)
    msg.setId(request->getId());
 
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT * FROM monitor_channel"));
+   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT channel_id, channel_name FROM monitor_channel"));
    if (hStmt != NULL)
    {
       hResult = DBSelectPrepared(hStmt);
@@ -14183,9 +14183,8 @@ void ClientSession::getMonitorChannels(NXCPMessage *request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
-            msg.setField(dwId, DBGetFieldInt64(hResult, i, 0));            //id
-            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //channel_id
-            msg.setField(dwId + 2, DBGetField(hResult, i, 2, NULL, 0));    //channel_name
+            msg.setField(dwId, DBGetField(hResult, i, 0, NULL, 0));        //channel_id
+            msg.setField(dwId + 1, DBGetField(hResult, i, 1, NULL, 0));    //channel_name
          }
          DBFreeResult(hResult);
       }
@@ -14402,8 +14401,12 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          INT32 mappingId = getMaxId(_T("mapping_list"));
          //Insert to spider mapping config
-
          createSpiderMappingConfig(mappingId, request);
+         if (mappingType == TYPE_MAPPING_CUSTOM_VIDEO_LINK
+               || mappingType == TYPE_MAPPING_CUSTOM_VIDEO_LOCATION)
+         {
+            addCustomVideoList(monitorContent, mappingId);
+         }
 
          if (statusSync == 1) //enable timer
          {
@@ -14413,15 +14416,7 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
             if (downloadClient->initSuccess)
             {
                try {
-                  ::SpiderCorba::SpiderDefine::DownloadConfig downloadCfg;
-                  downloadCfg.cHomeId = ::CORBA::wstring_dup(cHomeId);
-                  downloadCfg.monitorContent = ::CORBA::wstring_dup(monitorContent);
-                  downloadCfg.downloadClusterId = ::CORBA::wstring_dup(downloadId);
-                  downloadCfg.mappingType = mappingType;
-                  downloadCfg.timerInterval = timeSync;
-                  downloadCfg.synStatus = statusSync;
-
-                  downloadClient->mDownloadRef->createDownloadTimer(mappingId, downloadCfg);
+                  downloadClient->mDownloadRef->createDownloadTimer(mappingId, timeSync);
                }
                catch (CORBA::TRANSIENT&) {
                   debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14470,6 +14465,32 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
    }
    DBConnectionPoolReleaseConnection(hdb);
    sendMessage(&msg);
+}
+
+void ClientSession::addCustomVideoList(TCHAR* monitorContent, INT32 mappingId)
+{
+   debugPrintf(6, _T("ClientSession1::[addCustomVideoList]"));
+   DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+   DB_STATEMENT hStmt;
+   //spit monitor content
+   TCHAR * buffer;
+   TCHAR* token;
+   token = _tcstok_r (monitorContent, _T(";"), &buffer);
+   while (token != NULL)
+   {
+      hStmt = DBPrepare(hdb, _T("INSERT INTO video_container (video_id, process_status, mapping_list_id) VALUES (?,?,?)"));
+      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)token, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 2, DB_SQLTYPE_INTEGER, 0);
+      DBBind(hStmt, 3, DB_SQLTYPE_INTEGER, mappingId);
+      bool success = DBExecute(hStmt);
+      if (success == false)
+      {
+         debugPrintf(6, _T("ClientSession1::[addCustomVideoList] Can not add video id = %s"), token);
+      }
+
+      token = _tcstok_r (nullptr, _T(";"), &buffer);
+   }
+   DBConnectionPoolReleaseConnection(hdb);
 }
 
 void ClientSession::createSpiderMappingConfig(UINT32 mappingId, NXCPMessage *request)
@@ -14671,14 +14692,12 @@ void ClientSession::modifyMonitorChannel(NXCPMessage * request)
    if (hdb != NULL)
    {
       // Prepare and execute INSERT or UPDATE query
-      INT32 id = request->getFieldAsInt32(VID_MONITOR_CHANNEL_RECORD_ID);
       TCHAR* cId = request->getFieldAsString(VID_MONITOR_CHANNEL_ID);
       TCHAR* cName = request->getFieldAsString(VID_MONITOR_CHANNEL_NAME);
 
-      hStmt = DBPrepare(hdb, _T("UPDATE monitor_channel SET channel_id = ?, channel_name = ? WHERE id = ?"));
-      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_INTEGER, (INT32)id);
+      hStmt = DBPrepare(hdb, _T("UPDATE monitor_channel SET channel_name = ? WHERE channel_id = ?"));
+      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)cName, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)cId, DB_BIND_TRANSIENT);
       bool success = DBExecute(hStmt);
       if (success == true)
       {
@@ -14742,14 +14761,7 @@ void ClientSession::modifyMappingChannel(NXCPMessage * request)
          if (downloadClient->initSuccess)
          {
             try {
-               ::SpiderCorba::SpiderDefine::DownloadConfig downloadCfg;
-               downloadCfg.cHomeId = CORBA::wstring_dup(cHomeId);
-               downloadCfg.monitorContent = CORBA::wstring_dup(monitorContent);
-               downloadCfg.downloadClusterId = CORBA::wstring_dup(downloadId);
-               downloadCfg.mappingType = mappingType;
-               downloadCfg.timerInterval = timeSync;
-               downloadCfg.synStatus = statusSync;
-               downloadClient->mDownloadRef->modifyDownloadTimer(mappingId, downloadCfg);
+               downloadClient->mDownloadRef->modifyDownloadTimer((INT32)mappingId, (INT32)timeSync, (INT32)statusSync);
             }
             catch (CORBA::TRANSIENT&) {
                debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14840,7 +14852,7 @@ void ClientSession::deleteHomeChannel(NXCPMessage * request)
    sendMessage(&msg);
 }
 
-void ClientSession::deleteMonitorAccount(NXCPMessage * request)
+void ClientSession::deleteMonitorChannel(NXCPMessage * request)
 {
    debugPrintf(6, _T("ClientSession::[%s]"), __FUNCTION__);
    NXCPMessage msg;
@@ -14849,22 +14861,18 @@ void ClientSession::deleteMonitorAccount(NXCPMessage * request)
    // Prepare response message
    msg.setCode(CMD_REQUEST_COMPLETED);
    msg.setId(request->getId());
-   INT32 id = request->getFieldAsInt32(VID_MONITOR_CHANNEL_RECORD_ID);
    TCHAR* cMonitorId = request->getFieldAsString(VID_MONITOR_CHANNEL_ID);
-   //bool isDelete = checkDeleteCondition(cMonitorId, _T("channel_mapping"),  _T("MonitorChannelId"));
    bool isDelete = true;
    if (isDelete)
    {
       if (hdb != NULL)
       {
-         debugPrintf(6, _T("ClientSession::[%s] id = %d"), __FUNCTION__, id);
-         hStmt = DBPrepare(hdb, _T("DELETE FROM monitor_channel WHERE id = ?"));
-         DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)id);
+         hStmt = DBPrepare(hdb, _T("DELETE FROM monitor_channel WHERE channel_id = ?"));
+         DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR*)cMonitorId, DB_BIND_TRANSIENT);
          bool success = DBExecute(hStmt);
          if (success == true)
          {
             msg.setField(VID_RCC, RCC_SUCCESS);
-            debugPrintf(6, _T("ClientSession::[%s] delete success"), __FUNCTION__);
          }
          else {
             msg.setField(VID_RCC, RCC_DB_FAILURE);

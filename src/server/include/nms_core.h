@@ -226,7 +226,7 @@ enum ClusterType
 
 enum MappingType
 {
-   TYPE_MAPPING_CHANNEL = 1,
+   TYPE_MAPPING_CHANNEL = 0,
    TYPE_MAPPING_PLAYLIST,
    TYPE_MAPPING_KEYWORD,
    TYPE_MAPPING_CUSTOM_VIDEO_LINK,
@@ -779,7 +779,7 @@ private:
    void modifyMappingChannel(NXCPMessage *request);
    void deleteGoogleAccount(NXCPMessage *request);
    void deleteHomeChannel(NXCPMessage *request);
-   void deleteMonitorAccount(NXCPMessage *request);
+   void deleteMonitorChannel(NXCPMessage *request);
    void deleteMappingChannel(NXCPMessage *request);
    void getCluster(NXCPMessage *request);
    void createCluster(NXCPMessage *request);
@@ -793,6 +793,7 @@ private:
    bool checkDeleteCondition(TCHAR* checkId, TCHAR* tbCheck, TCHAR* fieldCheck);
    INT32 getLastestInsertId(TCHAR* tbName);
    bool checkDeleteUploadTimer(TCHAR* cHomeId);
+   void addCustomVideoList(TCHAR* monitorContent, INT32 mappingId);
    AgentConnection* getAgentConnectionByObjectName(TCHAR* objectName);
    bool checkMappingIsExisted(TCHAR* cHomeId, TCHAR* cMonitorId);
    INT32 getMaxId(const TCHAR * tbName);
