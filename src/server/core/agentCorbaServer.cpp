@@ -14,7 +14,7 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 	DB_RESULT hResult;
 	UINT32 i, dwNumRecords;
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-	_sntprintf(query, sizeof query, _T("SELECT id, mapping_type, time_interval_sync")
+	_sntprintf(query, sizeof query, _T("SELECT id, time_interval_sync")
 	           _T(" FROM mapping_list WHERE status_sync = 1 AND download_cluster = '%s'"), (const TCHAR*)downloadClusterId);
 	DbgPrintf(6, _T("AgentSide_i::[onDownloadStartup] SQL query = %s"), query);
 	DB_STATEMENT hStmt = DBPrepare(hdb, query);
@@ -427,6 +427,57 @@ void AgentSide_i::insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::Video
 	DBConnectionPoolReleaseConnection(hdb);
 }
 
+void AgentSide_i::updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo)
+{
+	DbgPrintf(6, _T("AgentSide_i::[updateDownloadedVideo] jobId = %d"), (INT32)jobId);
+	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+	DB_STATEMENT hStmt;
+	if (hdb != NULL)
+	{
+		hStmt = DBPrepare(hdb, _T("UPDATE video_container SET title = ?, description = ?, tag = ?, thumbnail = ?, ")
+		                  _T(" downloaded_path = ?, process_status = ?, license = ? WHERE id = ?"));
+		DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR*)vInfo.title, DB_BIND_TRANSIENT);
+		DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)vInfo.description, DB_BIND_TRANSIENT);
+		DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)vInfo.tags, DB_BIND_TRANSIENT);
+		DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)vInfo.thumbnail, DB_BIND_TRANSIENT);
+		DBBind(hStmt, 5, DB_SQLTYPE_VARCHAR, (const TCHAR *)vInfo.vDownloadPath, DB_BIND_TRANSIENT);
+		DBBind(hStmt, 6, DB_SQLTYPE_INTEGER, vInfo.processStatus);
+		DBBind(hStmt, 7, DB_SQLTYPE_INTEGER, vInfo.license);
+		DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, jobId);
+		bool success = DBExecute(hStmt);
+		if (success == true)
+		{
+			//notify to render app
+			TCHAR* renderClusterId = getClusterId((INT32)vInfo.mappingId, TYPE_RENDERED);
+			SpiderRenderClient* renderClient = new SpiderRenderClient(renderClusterId);
+			if (renderClient->initSuccess)
+			{
+				if (renderClient->mRenderRef != NULL)
+				{
+					try
+					{
+						renderClient->mRenderRef->createRenderJob(jobId, vInfo);
+					}
+					catch (CORBA::TRANSIENT&) {
+						DbgPrintf(1, _T("AgentSide_i::[] : Caught system exception TRANSIENT -- unable to contact the server"));
+					}
+					catch (CORBA::SystemException& ex) {
+						DbgPrintf(1, _T("AgentSide_i::[] : Caught a CORBA:: %s"), ex._name());
+					}
+					catch (CORBA::Exception& ex)
+					{
+						DbgPrintf(1, _T("AgentSide_i::[] : Caught a CORBA:: %s"), ex._name());
+					}
+				}
+			} else
+			{
+			}
+		} else
+		{
+			DbgPrintf(1, _T("AgentSide_i::updateDownloadedVideo : insert new video info FALSE"));
+		}
+	}
+}
 TCHAR* AgentSide_i::getClusterId(INT32 mappingId, INT32 clusterType)
 {
 	DbgPrintf(6, _T("AgentSide_i::[getClusterId] : mappingId = %d - mapping type = %d"), mappingId);
@@ -471,7 +522,7 @@ TCHAR* AgentSide_i::getClusterId(INT32 mappingId, INT32 clusterType)
 	return clusterName;
 }
 
-void AgentSide_i::updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo)
+void AgentSide_i::updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo & vInfo)
 {
 	DbgPrintf(6, _T("AgentSide_i::[updateRenderedVideo] jobId = %d"), (INT32)jobId);
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();

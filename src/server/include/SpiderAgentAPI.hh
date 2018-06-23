@@ -768,16 +768,17 @@ _CORBA_MODULE_BEG
     ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId);
     void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime);
     void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
+    void updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId);
     SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId);
     void onRenderStartup(const ::CORBA::WChar* renderClusterId);
     SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
+    void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     void onUploadStartup(const ::CORBA::WChar* uploadClusterId);
     SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId);
     void updateUploadedVideo(::CORBA::Long jobId);
     SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId);
     SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType);
-    void updateVideoContainer(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
 
     // Constructors
     inline _objref_AgentSide()  { _PR_setobj(0); }  // nil
@@ -816,16 +817,17 @@ _CORBA_MODULE_BEG
     virtual ::CORBA::LongLong getLastSyncTime(::CORBA::Long mappingId) = 0;
     virtual void updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong lastSyncTime) = 0;
     virtual void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
+    virtual void updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId) = 0;
     virtual SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId) = 0;
     virtual void onRenderStartup(const ::CORBA::WChar* renderClusterId) = 0;
     virtual SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId) = 0;
+    virtual void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual void onUploadStartup(const ::CORBA::WChar* uploadClusterId) = 0;
     virtual SpiderDefine::UploadConfig* getUploadConfig(::CORBA::Long mappingId) = 0;
     virtual void updateUploadedVideo(::CORBA::Long jobId) = 0;
     virtual SpiderDefine::AuthenInfo* getAuthenInfo(::CORBA::Long mappingId) = 0;
     virtual SpiderDefine::ClusterInfo* getClusterInfo(::CORBA::Long mappingId, ::CORBA::Long clusterType) = 0;
-    virtual void updateVideoContainer(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     
   public:  // Really protected, workaround for xlC
     virtual _CORBA_Boolean _dispatch(omniCallHandle&);
