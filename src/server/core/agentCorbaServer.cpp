@@ -477,7 +477,9 @@ void AgentSide_i::updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba
 			DbgPrintf(1, _T("AgentSide_i::updateDownloadedVideo : insert new video info FALSE"));
 		}
 	}
+	DBConnectionPoolReleaseConnection(hdb);
 }
+
 TCHAR* AgentSide_i::getClusterId(INT32 mappingId, INT32 clusterType)
 {
 	DbgPrintf(6, _T("AgentSide_i::[getClusterId] : mappingId = %d - mapping type = %d"), mappingId);
@@ -486,7 +488,7 @@ TCHAR* AgentSide_i::getClusterId(INT32 mappingId, INT32 clusterType)
 	DB_RESULT hResult;
 	UINT32 dwNumRecords;
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-	TCHAR* tbField;
+	const TCHAR* tbField;
 	switch (clusterType)
 	{
 	case TYPE_DOWNLOADED:
