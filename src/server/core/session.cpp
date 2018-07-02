@@ -15264,7 +15264,7 @@ void ClientSession::deleteVideoContainer(UINT32 mappingId)
 
    if (hdb != NULL)
    {
-      hStmt = DBPrepare(hdb, _T("DELETE FROM video_container WHERE mapping_list_Id"));
+      hStmt = DBPrepare(hdb, _T("DELETE FROM video_container WHERE mapping_list_id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)mappingId);
       bool success = DBExecute(hStmt);
       if (success == false)
