@@ -116,6 +116,12 @@ static NXCORE_LOG s_logs[] =
 			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
 			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
 			{ _T("google_account_user_name"), _T("Google User Name"), LC_TEXT },
+			{ _T("video_number"), _T("Video Number"), LC_INTEGER },
+			{ _T("view_number"), _T("View Number"), LC_INTEGER },
+			{ _T("subscriber"), _T("Subscriber"), LC_INTEGER },
+			{ _T("date_created"), _T("Date Created"), LC_TIMESTAMP },
+			{ _T("status"), _T("Status"), LC_INTEGER },
+			{ _T("note"), _T("Note"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},
@@ -123,6 +129,12 @@ static NXCORE_LOG s_logs[] =
 		{
 			{ _T("channel_id"), _T("Channel Id"), LC_TEXT },
 			{ _T("channel_name"), _T("Channel Name"), LC_TEXT },
+			{ _T("video_number"), _T("Video Number"), LC_INTEGER },
+			{ _T("view_number"), _T("View Number"), LC_INTEGER },
+			{ _T("subscriber"), _T("Subscriber"), LC_INTEGER },
+			{ _T("date_created"), _T("Date Created"), LC_TIMESTAMP },
+			{ _T("status"), _T("Status"), LC_INTEGER },
+			{ _T("note"), _T("Note"), LC_TEXT },
 			{ NULL, NULL, 0 }
 		}
 	},

@@ -54,6 +54,7 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -121,6 +122,7 @@ void AgentSide_i::onRenderStartup(const ::CORBA::WChar* renderClusterId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	DbgPrintf(5, _T("AgentSide_i::[onRenderStartup] <<<< "));
@@ -179,6 +181,7 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -256,6 +259,7 @@ void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -284,6 +288,7 @@ TCHAR* AgentSide_i::getHomeChannelId(INT32 mappingId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return cHomeId;
@@ -314,6 +319,7 @@ TCHAR* AgentSide_i::getHomeChannelId(INT32 mappingId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return result;
@@ -331,6 +337,7 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 		DbgPrintf(5, _T("AgentSide_i::[updateLastSyntime] SQL query = %s"), query);
 		hStmt = DBPrepare(hdb, query);
 		DBExecute(hStmt);
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -362,6 +369,7 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return customVideo;
@@ -422,6 +430,7 @@ void AgentSide_i::insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::Video
 		{
 			DbgPrintf(1, _T("AgentSide_i::updateDownloadedVideo : insert new video info FALSE"));
 		}
+		DBFreeStatement(hStmt);
 	}
 
 	DBConnectionPoolReleaseConnection(hdb);
@@ -476,6 +485,7 @@ void AgentSide_i::updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba
 		{
 			DbgPrintf(1, _T("AgentSide_i::updateDownloadedVideo : insert new video info FALSE"));
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -519,6 +529,7 @@ TCHAR* AgentSide_i::getClusterId(INT32 mappingId, INT32 clusterType)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return clusterName;
@@ -570,6 +581,7 @@ void AgentSide_i::updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::
 			} else {
 			}
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -694,6 +706,7 @@ INT32 AgentSide_i::getMaxId(const TCHAR * tbName)
 			result = DBGetFieldInt64(hResult, 0, 0);
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return result;
@@ -718,6 +731,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		else {
 			DbgPrintf(1, _T("AgentSide_i::[updateUploadedVideo] ERROR! Can not delete vide record for jobId: %ld"), jobId);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 }
@@ -755,6 +769,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		else {
 			DbgPrintf(1, _T(" AgentSide_i::[getDownloadConfig] result is NULL"));
 		}
+		DBFreeStatement(hStmt);
 	}
 	else {
 		DbgPrintf(1, _T(" AgentSide_i::[getDownloadConfig] mappingId = Can not prepare query command"));
@@ -799,6 +814,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		else {
 			DbgPrintf(1, _T(" AgentSide_i::[getRenderConfig] result is NULL"));
 		}
+		DBFreeStatement(hStmt);
 	}
 	else {
 		DbgPrintf(1, _T(" AgentSide_i::[getRenderConfig] mappingId = Can not prepare query command"));
@@ -840,6 +856,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		else {
 			DbgPrintf(1, _T(" AgentSide_i::[getUploadConfig] result is NULL"));
 		}
+		DBFreeStatement(hStmt);
 	}
 	else {
 		DbgPrintf(1, _T(" AgentSide_i::[getUploadConfig] mappingId = Can not prepare query command"));
@@ -888,6 +905,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return clusterInfo;
@@ -936,6 +954,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 			}
 			DBFreeResult(hResult);
 		}
+		DBFreeStatement(hStmt);
 	}
 	DBConnectionPoolReleaseConnection(hdb);
 	return authenInfo;

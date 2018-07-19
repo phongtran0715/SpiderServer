@@ -115,6 +115,32 @@ _CORBA_MODULE_BEG
     static _core_attr const char* _PD_repoId;
 
     // Other IDL defined within this scope.
+    struct ChannelInfo {
+      typedef _CORBA_ConstrType_Variable_Var<ChannelInfo> _var_type;
+
+      
+      ::CORBA::Long videoNumber;
+
+      ::CORBA::Long viewNumber;
+
+      ::CORBA::Long subcriber;
+
+      ::CORBA::Long dateCreated;
+
+      ::CORBA::Long status;
+
+      ::CORBA::WString_member note;
+
+    
+
+      void operator>>= (cdrStream &) const;
+      void operator<<= (cdrStream &);
+    };
+
+    typedef ChannelInfo::_var_type ChannelInfo_var;
+
+    typedef _CORBA_ConstrType_Variable_OUT_arg< ChannelInfo,ChannelInfo_var > ChannelInfo_out;
+
     struct VideoInfo {
       typedef _CORBA_ConstrType_Variable_Var<VideoInfo> _var_type;
 
@@ -697,6 +723,120 @@ _CORBA_MODULE_BEG
   };
 
 
+#ifndef __SpiderCorba_mYoutubeAgent__
+#define __SpiderCorba_mYoutubeAgent__
+  class YoutubeAgent;
+  class _objref_YoutubeAgent;
+  class _impl_YoutubeAgent;
+  
+  typedef _objref_YoutubeAgent* YoutubeAgent_ptr;
+  typedef YoutubeAgent_ptr YoutubeAgentRef;
+
+  class YoutubeAgent_Helper {
+  public:
+    typedef YoutubeAgent_ptr _ptr_type;
+
+    static _ptr_type _nil();
+    static _CORBA_Boolean is_nil(_ptr_type);
+    static void release(_ptr_type);
+    static void duplicate(_ptr_type);
+    static void marshalObjRef(_ptr_type, cdrStream&);
+    static _ptr_type unmarshalObjRef(cdrStream&);
+  };
+
+  typedef _CORBA_ObjRef_Var<_objref_YoutubeAgent, YoutubeAgent_Helper> YoutubeAgent_var;
+  typedef _CORBA_ObjRef_OUT_arg<_objref_YoutubeAgent,YoutubeAgent_Helper > YoutubeAgent_out;
+
+#endif
+
+  // interface YoutubeAgent
+  class YoutubeAgent {
+  public:
+    // Declarations for this interface type.
+    typedef YoutubeAgent_ptr _ptr_type;
+    typedef YoutubeAgent_var _var_type;
+
+    static _ptr_type _duplicate(_ptr_type);
+    static _ptr_type _narrow(::CORBA::Object_ptr);
+    static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
+    
+    static _ptr_type _nil();
+
+    static inline void _marshalObjRef(_ptr_type, cdrStream&);
+
+    static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
+      omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
+      if (o)
+        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+      else
+        return _nil();
+    }
+
+    static inline _ptr_type _fromObjRef(omniObjRef* o) {
+      if (o)
+        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+      else
+        return _nil();
+    }
+
+    static _core_attr const char* _PD_repoId;
+
+    // Other IDL defined within this scope.
+    
+  };
+
+  class _objref_YoutubeAgent :
+    public virtual _objref_SpiderDefine
+  {
+  public:
+    // IDL operations
+    void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status);
+
+    // Constructors
+    inline _objref_YoutubeAgent()  { _PR_setobj(0); }  // nil
+    _objref_YoutubeAgent(omniIOR*, omniIdentity*);
+
+  protected:
+    virtual ~_objref_YoutubeAgent();
+
+    
+  private:
+    virtual void* _ptrToObjRef(const char*);
+
+    _objref_YoutubeAgent(const _objref_YoutubeAgent&);
+    _objref_YoutubeAgent& operator = (const _objref_YoutubeAgent&);
+    // not implemented
+
+    friend class YoutubeAgent;
+  };
+
+  class _pof_YoutubeAgent : public _OMNI_NS(proxyObjectFactory) {
+  public:
+    inline _pof_YoutubeAgent() : _OMNI_NS(proxyObjectFactory)(YoutubeAgent::_PD_repoId) {}
+    virtual ~_pof_YoutubeAgent();
+
+    virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
+    virtual _CORBA_Boolean is_a(const char*) const;
+  };
+
+  class _impl_YoutubeAgent :
+    public virtual _impl_SpiderDefine
+  {
+  public:
+    virtual ~_impl_YoutubeAgent();
+
+    virtual void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status) = 0;
+    
+  public:  // Really protected, workaround for xlC
+    virtual _CORBA_Boolean _dispatch(omniCallHandle&);
+
+  private:
+    virtual void* _ptrToInterface(const char*);
+    virtual const char* _mostDerivedRepoId();
+    
+  };
+
+
 #ifndef __SpiderCorba_mAgentSide__
 #define __SpiderCorba_mAgentSide__
   class AgentSide;
@@ -894,6 +1034,18 @@ _CORBA_MODULE_BEG
     }
   };
 
+  class YoutubeAgent :
+    public virtual SpiderCorba::_impl_YoutubeAgent,
+    public virtual SpiderDefine
+  {
+  public:
+    virtual ~YoutubeAgent();
+
+    inline ::SpiderCorba::YoutubeAgent_ptr _this() {
+      return (::SpiderCorba::YoutubeAgent_ptr) _do_this(::SpiderCorba::YoutubeAgent::_PD_repoId);
+    }
+  };
+
   class AgentSide :
     public virtual SpiderCorba::_impl_AgentSide,
     public virtual SpiderDefine
@@ -941,6 +1093,11 @@ SpiderCorba::RenderSide::_marshalObjRef(::SpiderCorba::RenderSide_ptr obj, cdrSt
 
 inline void
 SpiderCorba::UploadSide::_marshalObjRef(::SpiderCorba::UploadSide_ptr obj, cdrStream& s) {
+  omniObjRef::_marshal(obj->_PR_getobj(),s);
+}
+
+inline void
+SpiderCorba::YoutubeAgent::_marshalObjRef(::SpiderCorba::YoutubeAgent_ptr obj, cdrStream& s) {
   omniObjRef::_marshal(obj->_PR_getobj(),s);
 }
 

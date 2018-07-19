@@ -220,7 +220,7 @@ enum CertificateType
 enum ClusterType
 {
    TYPE_DOWNLOADED  = 1,
-   TYPE_RENDERED, 
+   TYPE_RENDERED,
    TYPE_UPLOADED
 };
 
@@ -797,6 +797,8 @@ private:
    AgentConnection* getAgentConnectionByObjectName(TCHAR* objectName);
    bool checkMappingIsExisted(TCHAR* cHomeId, TCHAR* cMonitorId);
    INT32 getMaxId(const TCHAR * tbName);
+   void updateChannelInfo(const TCHAR* tbName, TCHAR* channelId, TCHAR* channelName, INT32 videoNumber,
+                          INT32 viewNumber, INT32 subscriber, INT32 dateCreated, INT32 status);
 
 public:
    ClientSession(SOCKET hSocket, const InetAddress& addr);

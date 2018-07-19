@@ -2,6 +2,18 @@ module SpiderCorba
 {
   interface SpiderDefine
   {
+     struct ChannelInfo
+     {
+          //wstring channelId;
+          //wstring channelName;
+          long videoNumber;
+          long viewNumber;
+          long subcriber;
+          long dateCreated;
+          long status;
+          wstring note;
+     };
+
      struct VideoInfo
      {
           wstring videoId;
@@ -87,6 +99,12 @@ module SpiderCorba
         boolean deleteUploadTimer(in wstring cHomeId);
         boolean createUploadJob(in long jobId, in VideoInfo vInfo, in wstring cHomeId);
         boolean deleteUploadJob(in long jobId, in wstring cHomeId);
+  };
+
+  interface YoutubeAgent : SpiderDefine
+  {
+       void getChannelInfo(in wstring channelId, out wstring channelName, out long videoNumber, out long viewNUmber,
+       out long subcriber, out long dateCreated, out long status);
   };
 
   interface AgentSide : SpiderDefine

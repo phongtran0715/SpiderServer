@@ -13,6 +13,18 @@
 #define LIBCORBA_EXPORTABLE
 #endif
 
+class LIBCORBA_EXPORTABLE YoutubeAgent
+{
+private:
+   CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb, const TCHAR* contextName);
+public:
+   SpiderCorba::YoutubeAgent_var mYtAgentRef;
+   CORBA::ORB_var mOrb;
+   bool initSuccess;
+   YoutubeAgent(const TCHAR* contextName);
+   ~YoutubeAgent();
+};
+
 class LIBCORBA_EXPORTABLE SpiderDownloadClient
 {
 private:
