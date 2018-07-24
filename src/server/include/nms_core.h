@@ -261,6 +261,17 @@ typedef struct
    BYTE bMacAddr[MAC_ADDR_LENGTH];
 } NEW_NODE;
 
+typedef struct 
+{
+   TCHAR* channelId;
+   TCHAR* channelName;
+   LONG videoNumber;
+   LONG viewNumber;
+   LONG subscriber;
+   LONG dateCreated;
+   LONG status;
+} ChannelData;
+
 /**
  * New node flags
  */
@@ -797,8 +808,9 @@ private:
    AgentConnection* getAgentConnectionByObjectName(TCHAR* objectName);
    bool checkMappingIsExisted(TCHAR* cHomeId, TCHAR* cMonitorId);
    INT32 getMaxId(const TCHAR * tbName);
-   void updateChannelInfo(const TCHAR* tbName, TCHAR* channelId, TCHAR* channelName, INT32 videoNumber,
-                          INT32 viewNumber, INT32 subscriber, INT32 dateCreated, INT32 status);
+   void updateChannelInfo(const TCHAR* tbName, ChannelData* cData);
+   void reloadChannelInfo(NXCPMessage * request);
+   ChannelData* getChannelInfo(TCHAR* channelId);
 
 public:
    ClientSession(SOCKET hSocket, const InetAddress& addr);

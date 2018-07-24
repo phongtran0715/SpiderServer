@@ -626,6 +626,7 @@ typedef struct
 #define CMD_MOD_CLUSTER                0x2012
 #define CMD_DEL_CLUSTER                0x2013
 #define CMD_CREATE_CLUSTER             0x2014
+#define CMD_RELOAD_CHANNEL_INFO        0x2015
 #define CMD_SPIDER_END                 0x2FFF
 
 /**
@@ -1263,6 +1264,7 @@ typedef struct
 #define VID_HOME_CHANNEL_NAME        ((UINT32)1019)
 #define VID_HOME_CHANNEL_GACCOUNT    ((UINT32)1020)
 #define VID_HOME_CHANNEL_ACCOUNT_ID  ((UINT32)1021)
+#define VID_CHANNEL_TABLE_NAME       ((UINT32)1022)
 #define VID_HOME_CHANNEL_END         ((UINT32)1030)
 
 //end home channel variable

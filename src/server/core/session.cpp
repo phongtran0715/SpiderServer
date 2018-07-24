@@ -1430,6 +1430,9 @@ void ClientSession::processingThread()
       case CMD_CREATE_CLUSTER:
          createCluster(pMsg);
          break;
+      case CMD_RELOAD_CHANNEL_INFO:
+         reloadChannelInfo(pMsg);
+         break;
       default:
          if ((m_wCurrentCmd >> 8) == 0x11)
          {
@@ -14335,36 +14338,8 @@ void ClientSession::createHomeChannel(NXCPMessage *request)
       bool success = DBExecute(hStmt);
       if (success == true)
       {
-         YoutubeAgent* ytAgent = new YoutubeAgent(_T("YoutubeAgent"));
-         if (ytAgent->initSuccess)
-         {
-            try
-            {
-               ::CORBA::WChar* channelName;
-               ::CORBA::Long videoNumber;
-               ::CORBA::Long viewNUmber;
-               ::CORBA::Long subscriber;
-               ::CORBA::Long dateCreated;
-               ::CORBA::Long status;
-               ytAgent->mYtAgentRef->getChannelInfo(cId, channelName, videoNumber, viewNUmber, subscriber, dateCreated, status);
-               debugPrintf(5, _T("video number = %d"), videoNumber);
-               debugPrintf(5, _T("channel Name = %s"), (TCHAR*)channelName);
-               debugPrintf(5, _T("get channel information successful"));
-               updateChannelInfo(_T("home_channel"), cId, channelName, videoNumber, viewNUmber, subscriber, dateCreated, status);
-               debugPrintf(5, _T("update channel infor successful"));
-            }
-            catch (CORBA::TRANSIENT&) {
-               debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
-            }
-            catch (CORBA::SystemException& ex) {
-               debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
-            }
-            catch (CORBA::Exception& ex) {
-               debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
-            }
-         } else {
-            debugPrintf(1, _T("ClientSession::[createHomeChannel] Init corba for download client FALSE"));
-         }
+         ChannelData *cData = getChannelInfo(cId);
+         updateChannelInfo(_T("home_channel"), cData);
          msg.setField(VID_RCC, RCC_SUCCESS);
       }
       else {
@@ -14374,6 +14349,45 @@ void ClientSession::createHomeChannel(NXCPMessage *request)
    }
    DBConnectionPoolReleaseConnection(hdb);
    sendMessage(&msg);
+}
+
+ChannelData* ClientSession::getChannelInfo(TCHAR* channelId)
+{
+   ChannelData* cData = new ChannelData();
+   YoutubeAgent* ytAgent = new YoutubeAgent(_T("YoutubeAgent"));
+   if (ytAgent->initSuccess)
+   {
+      try
+      {
+         ::CORBA::WChar* channelName;
+         ::CORBA::Long videoNumber;
+         ::CORBA::Long viewNumber;
+         ::CORBA::Long subscriber;
+         ::CORBA::Long dateCreated;
+         ::CORBA::Long status;
+         ytAgent->mYtAgentRef->getChannelInfo(channelId, channelName, videoNumber, viewNumber, subscriber, dateCreated, status);
+
+         cData->channelId = channelId;
+         cData->channelName = (TCHAR*) channelName;
+         cData->videoNumber = videoNumber;
+         cData->viewNumber = viewNumber;
+         cData->subscriber = subscriber;
+         cData->status = status;
+         debugPrintf(5, _T("update channel infor successful"));
+      }
+      catch (CORBA::TRANSIENT&) {
+         debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
+      }
+      catch (CORBA::SystemException& ex) {
+         debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
+      }
+      catch (CORBA::Exception& ex) {
+         debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
+      }
+   } else {
+      debugPrintf(1, _T("ClientSession::[createHomeChannel] Init corba for download client FALSE"));
+   }
+   return cData;
 }
 
 void ClientSession::createMonitorChannel(NXCPMessage *request)
@@ -14396,36 +14410,8 @@ void ClientSession::createMonitorChannel(NXCPMessage *request)
       bool success = DBExecute(hStmt);
       if (success == true)
       {
-         YoutubeAgent* ytAgent = new YoutubeAgent(_T("YoutubeAgent"));
-         if (ytAgent->initSuccess)
-         {
-            try
-            {
-               ::CORBA::WChar* channelName;
-               ::CORBA::Long videoNumber;
-               ::CORBA::Long viewNUmber;
-               ::CORBA::Long subscriber;
-               ::CORBA::Long dateCreated;
-               ::CORBA::Long status;
-               ytAgent->mYtAgentRef->getChannelInfo(cId, channelName, videoNumber, viewNUmber, subscriber, dateCreated, status);
-               debugPrintf(5, _T("video number = %d"), videoNumber);
-               debugPrintf(5, _T("channel Name = %s"), (TCHAR*)channelName);
-               debugPrintf(5, _T("get channel information successful"));
-               updateChannelInfo(_T("monitor_channel"), cId, channelName, videoNumber, viewNUmber, subscriber, dateCreated, status);
-               debugPrintf(5, _T("update channel infor successful"));
-            }
-            catch (CORBA::TRANSIENT&) {
-               debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
-            }
-            catch (CORBA::SystemException& ex) {
-               debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
-            }
-            catch (CORBA::Exception& ex) {
-               debugPrintf(1, _T("Caught a CORBA:: %s"), ex._name());
-            }
-         } else {
-            debugPrintf(1, _T("ClientSession::[createHomeChannel] Init corba for download client FALSE"));
-         }
+         ChannelData* cData = getChannelInfo(cId);
+         updateChannelInfo(_T("home_channel"), cData);
          msg.setField(VID_RCC, RCC_SUCCESS);
       }
       else {
@@ -14897,7 +14883,7 @@ void ClientSession::deleteGoogleAccount(NXCPMessage * request)
    sendMessage(&msg);
 }
 
-void ClientSession::deleteHomeChannel(NXCPMessage * request)
+void ClientSession::deleteHomeChannel(NXCPMessage* request)
 {
    debugPrintf(6, _T("ClientSession::[%s]"), __FUNCTION__);
    NXCPMessage msg;
@@ -14930,6 +14916,47 @@ void ClientSession::deleteHomeChannel(NXCPMessage * request)
    } else
    {
       msg.setField(VID_RCC, RCC_COMPONENT_LOCKED);
+   }
+
+   DBConnectionPoolReleaseConnection(hdb);
+   sendMessage(&msg);
+}
+
+void ClientSession::reloadChannelInfo(NXCPMessage * request)
+{
+   debugPrintf(6, _T("ClientSession::[%s]"), __FUNCTION__);
+   NXCPMessage msg;
+   DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
+   DB_STATEMENT hStmt;
+   TCHAR query [MAX_DB_STRING];
+   UINT32 dwNumRecords;
+   DB_RESULT hResult;
+   // Prepare response message
+   msg.setCode(CMD_REQUEST_COMPLETED);
+   msg.setId(request->getId());
+   TCHAR* tbName = request->getFieldAsString(VID_CHANNEL_TABLE_NAME);
+   //TODO: get channel list from database
+   _sntprintf(query, sizeof query, _T("SELECT channel_id FROM %s"), tbName);
+   hStmt = DBPrepare(hdb, query);
+   if (hStmt != NULL)
+   {
+      hResult = DBSelectPrepared(hStmt);
+      if (hResult != NULL)
+      {
+         dwNumRecords = DBGetNumRows(hResult);
+         for (int i = 0 ; i < dwNumRecords; i++)
+         {
+            TCHAR* channelId = DBGetField(hResult, i, 0, NULL, 0);
+            ChannelData *cData = getChannelInfo(channelId);
+            updateChannelInfo((const TCHAR*)tbName, cData);
+         }
+         msg.setField(VID_RCC, RCC_SUCCESS);
+         DBFreeResult(hResult);
+      } else
+      {
+         msg.setField(VID_RCC, RCC_DB_FAILURE);
+      }
+      DBFreeStatement(hStmt);
    }
 
    DBConnectionPoolReleaseConnection(hdb);
@@ -15460,8 +15487,7 @@ INT32 ClientSession::getMaxId(const TCHAR * tbName)
    return result;
 }
 
-void ClientSession::updateChannelInfo(const TCHAR* tbName, TCHAR* channelId, TCHAR* channelName, INT32 videoNumber,
-                                      INT32 viewNumber, INT32 subscriber, INT32 dateCreated, INT32 status)
+void ClientSession::updateChannelInfo(const TCHAR* tbName, ChannelData* cData)
 {
    debugPrintf(6, _T("ClientSession::[%s]"), __FUNCTION__);
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
@@ -15474,7 +15500,8 @@ void ClientSession::updateChannelInfo(const TCHAR* tbName, TCHAR* channelId, TCH
                         _T("  view_number = ?, subscriber = ?, date_created = ?, status = ? WHERE channel_id = ?"));
       _sntprintf(query, sizeof query, _T("UPDATE %s SET channel_name = '%s', video_number = %d, ")
                  _T("  view_number = %d, subscriber = %d, date_created = %d, status = %d WHERE channel_id = '%s'"),
-                 tbName, channelName, videoNumber, viewNumber, subscriber, dateCreated, status, channelId);
+                 tbName, cData->channelName, cData->videoNumber, cData->viewNumber, cData->subscriber,
+                 cData->dateCreated, cData->status, cData->channelId);
       DB_STATEMENT hStmt = DBPrepare(hdb, query);
       if (hStmt != NULL)
       {
