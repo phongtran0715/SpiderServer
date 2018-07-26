@@ -342,7 +342,7 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 	DBConnectionPoolReleaseConnection(hdb);
 }
 
-::SpiderCorba::SpiderDefine::CustomVideoInfor* AgentSide_i::getCustomVideo(const ::CORBA::WChar* downloadClusterId)
+::SpiderCorba::SpiderDefine::CustomVideoInfor* AgentSide_i::getCustomVideo(const ::CORBA::WChar* downloadClusterId, ::CORBA::Long timerId)
 {
 	DbgPrintf(5, _T("AgentSide_i::[getCustomVideo]"));
 	::SpiderCorba::SpiderDefine::CustomVideoInfor* customVideo = new ::SpiderCorba::SpiderDefine::CustomVideoInfor();
@@ -351,8 +351,9 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 	UINT32 dwNumRecords;
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
 
-	_sntprintf(query, sizeof query, _T("SELECT id, video_id, mapping_list_id FROM video_container WHERE mapping_list_id IN (SELECT id FROM mapping_list ")
-	           _T("WHERE download_cluster = '%s' AND status_sync = 1) AND process_status = 0 LIMIT 1"), (const TCHAR*) downloadClusterId);
+	_sntprintf(query, sizeof query, _T("SELECT id, video_id FROM video_container WHERE mapping_list_id IN (SELECT id FROM mapping_list ")
+	           _T("WHERE download_cluster = '%s' AND status_sync = 1) AND process_status = 0 AND mapping_list_id = %d LIMIT 1"),
+	           (const TCHAR*) downloadClusterId, timerId);
 	DbgPrintf(5, _T("AgentSide_i::getCustomVideo : SQL query = %s"), query);
 	DB_STATEMENT hStmt = DBPrepare(hdb, query);
 	if (hStmt != NULL)
@@ -365,7 +366,6 @@ void AgentSide_i::updateLastSyntime(::CORBA::Long mappingId, ::CORBA::LongLong l
 			{
 				customVideo->id = DBGetFieldInt64(hResult, 0, 0);
 				customVideo->videoId = CORBA::wstring_dup(DBGetField(hResult, 0, 1, NULL, 0));
-				customVideo->mappingId = DBGetFieldInt64(hResult, 0, 2);
 			}
 			DBFreeResult(hResult);
 		}

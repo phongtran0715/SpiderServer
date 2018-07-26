@@ -91,7 +91,7 @@ public:
     void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     void updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     ::SpiderCorba::SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId);
-    ::SpiderCorba::SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId);
+    ::SpiderCorba::SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId, ::CORBA::Long timerId);
     void onRenderStartup(const ::CORBA::WChar* renderClusterId);
     ::SpiderCorba::SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
     void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);

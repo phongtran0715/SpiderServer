@@ -297,8 +297,6 @@ _CORBA_MODULE_BEG
 
       ::CORBA::WString_member videoId;
 
-      ::CORBA::Long mappingId;
-
     
 
       void operator>>= (cdrStream &) const;
@@ -910,7 +908,7 @@ _CORBA_MODULE_BEG
     void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     void updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId);
-    SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId);
+    SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId, ::CORBA::Long timerId);
     void onRenderStartup(const ::CORBA::WChar* renderClusterId);
     SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId);
     void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
@@ -959,7 +957,7 @@ _CORBA_MODULE_BEG
     virtual void insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual void updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
     virtual SpiderDefine::DownloadConfig* getDownloadConfig(::CORBA::Long mappingId) = 0;
-    virtual SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId) = 0;
+    virtual SpiderDefine::CustomVideoInfor* getCustomVideo(const ::CORBA::WChar* downloadClusterId, ::CORBA::Long timerId) = 0;
     virtual void onRenderStartup(const ::CORBA::WChar* renderClusterId) = 0;
     virtual SpiderDefine::RenderConfig* getRenderConfig(::CORBA::Long mappingId) = 0;
     virtual void updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;

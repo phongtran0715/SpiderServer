@@ -179,7 +179,6 @@ SpiderCorba::SpiderDefine::CustomVideoInfor::operator>>= (cdrStream &_n) const
 {
   id >>= _n;
   _n.marshalWString(videoId,0);
-  mappingId >>= _n;
 
 }
 
@@ -188,7 +187,6 @@ SpiderCorba::SpiderDefine::CustomVideoInfor::operator<<= (cdrStream &_n)
 {
   (::CORBA::Long&)id <<= _n;
   videoId = _n.unmarshalWString(0);
-  (::CORBA::Long&)mappingId <<= _n;
 
 }
 
@@ -2538,7 +2536,7 @@ SpiderCorba::SpiderDefine::DownloadConfig* SpiderCorba::_objref_AgentSide::getDo
 // Code for SpiderCorba::AgentSide::getCustomVideo
 
 // Proxy call descriptor class. Mangled signature:
-//  _cSpiderCorba_mSpiderDefine_mCustomVideoInfor_i_cwstring
+//  _cSpiderCorba_mSpiderDefine_mCustomVideoInfor_i_cwstring_i_clong
 class _0RL_cd_3d8d2fed4ebb30fd_02000000
   : public omniCallDescriptor
 {
@@ -2560,12 +2558,14 @@ public:
 
   ::CORBA::WString_var arg_0_;
   const ::CORBA::WChar* arg_0;
+  ::CORBA::Long arg_1;
   SpiderCorba::SpiderDefine::CustomVideoInfor_var result;
 };
 
 void _0RL_cd_3d8d2fed4ebb30fd_02000000::marshalArguments(cdrStream& _n)
 {
   _n.marshalWString(arg_0,0);
+  arg_1 >>= _n;
 
 }
 
@@ -2573,6 +2573,7 @@ void _0RL_cd_3d8d2fed4ebb30fd_02000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = _n.unmarshalWString(0);
   arg_0 = arg_0_.in();
+  (::CORBA::Long&)arg_1 <<= _n;
 
 }
 
@@ -2599,15 +2600,16 @@ _0RL_lcfn_3d8d2fed4ebb30fd_12000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_3d8d2fed4ebb30fd_02000000* tcd = (_0RL_cd_3d8d2fed4ebb30fd_02000000*)cd;
   SpiderCorba::_impl_AgentSide* impl = (SpiderCorba::_impl_AgentSide*) svnt->_ptrToInterface(SpiderCorba::AgentSide::_PD_repoId);
-  tcd->result = impl->getCustomVideo(tcd->arg_0);
+  tcd->result = impl->getCustomVideo(tcd->arg_0, tcd->arg_1);
 
 
 }
 
-SpiderCorba::SpiderDefine::CustomVideoInfor* SpiderCorba::_objref_AgentSide::getCustomVideo(const ::CORBA::WChar* downloadClusterId)
+SpiderCorba::SpiderDefine::CustomVideoInfor* SpiderCorba::_objref_AgentSide::getCustomVideo(const ::CORBA::WChar* downloadClusterId, ::CORBA::Long timerId)
 {
   _0RL_cd_3d8d2fed4ebb30fd_02000000 _call_desc(_0RL_lcfn_3d8d2fed4ebb30fd_12000000, "getCustomVideo", 15);
   _call_desc.arg_0 = downloadClusterId;
+  _call_desc.arg_1 = timerId;
 
   _invoke(_call_desc);
   return _call_desc.result._retn();
