@@ -199,17 +199,7 @@ _CORBA_MODULE_BEG
       typedef _CORBA_ConstrType_Variable_Var<RenderConfig> _var_type;
 
       
-      ::CORBA::WString_member vIntroTemp;
-
-      ::CORBA::WString_member vOutroTemp;
-
-      ::CORBA::WString_member vLogoTemp;
-
-      ::CORBA::Boolean enableIntro;
-
-      ::CORBA::Boolean enableOutro;
-
-      ::CORBA::Boolean enableLogo;
+      ::CORBA::WString_member renderCommand;
 
     
 

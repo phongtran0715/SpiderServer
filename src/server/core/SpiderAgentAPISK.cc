@@ -91,24 +91,14 @@ SpiderCorba::SpiderDefine::DownloadConfig::operator<<= (cdrStream &_n)
 void
 SpiderCorba::SpiderDefine::RenderConfig::operator>>= (cdrStream &_n) const
 {
-  _n.marshalWString(vIntroTemp,0);
-  _n.marshalWString(vOutroTemp,0);
-  _n.marshalWString(vLogoTemp,0);
-  _n.marshalBoolean(enableIntro);
-  _n.marshalBoolean(enableOutro);
-  _n.marshalBoolean(enableLogo);
+  _n.marshalWString(renderCommand,0);
 
 }
 
 void
 SpiderCorba::SpiderDefine::RenderConfig::operator<<= (cdrStream &_n)
 {
-  vIntroTemp = _n.unmarshalWString(0);
-  vOutroTemp = _n.unmarshalWString(0);
-  vLogoTemp = _n.unmarshalWString(0);
-  enableIntro = _n.unmarshalBoolean();
-  enableOutro = _n.unmarshalBoolean();
-  enableLogo = _n.unmarshalBoolean();
+  renderCommand = _n.unmarshalWString(0);
 
 }
 

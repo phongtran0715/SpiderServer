@@ -786,8 +786,7 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 	INT32 dwNumRecords;
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
 	TCHAR query [MAX_DB_STRING];
-	_sntprintf(query, sizeof query, _T("SELECT video_intro, video_outro , logo, enable_intro, enable_outro, enable_logo ")
-	           _T(" FROM mapping_config WHERE mapping_list_id = %d "), (INT32)mappingId);
+	_sntprintf(query, sizeof query, _T("SELECT render_command FROM mapping_config WHERE mapping_list_id = %d "), (INT32)mappingId);
 	DbgPrintf(5, _T(" AgentSide_i::[getRenderConfig] SQL query = %s"), query);
 	DB_STATEMENT hStmt = DBPrepare(hdb, query);
 	if (hStmt != NULL)
@@ -796,15 +795,10 @@ void AgentSide_i::updateUploadedVideo(::CORBA::Long jobId)
 		if (hResult != NULL)
 		{
 			dwNumRecords = DBGetNumRows(hResult);
-			DbgPrintf(5, _T(" AgentSide_i::[getRenderConfig] Num ber record = %d"), dwNumRecords);
+			DbgPrintf(5, _T(" AgentSide_i::[getRenderConfig] Number record = %d"), dwNumRecords);
 			if (dwNumRecords > 0)
 			{
-				renderCfg->vIntroTemp = CORBA::wstring_dup(DBGetField(hResult, 0, 0, NULL, 0));
-				renderCfg->vOutroTemp = CORBA::wstring_dup(DBGetField(hResult, 0, 1, NULL, 0));
-				renderCfg->vLogoTemp = CORBA::wstring_dup(DBGetField(hResult, 0, 2, NULL, 0));
-				renderCfg->enableIntro = DBGetFieldInt64(hResult, 0, 3) == 1;
-				renderCfg->enableOutro = DBGetFieldInt64(hResult, 0, 4) == 1;
-				renderCfg->enableLogo = DBGetFieldInt64(hResult, 0, 5) == 1;
+				renderCfg->renderCommand = CORBA::wstring_dup(DBGetField(hResult, 0, 0, NULL, 0));
 			} else {
 				DbgPrintf(1, _T(" AgentSide_i::[getRenderConfig] Not found render config data in database with mappingId = %d "), mappingId);
 			}

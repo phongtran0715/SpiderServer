@@ -14227,9 +14227,8 @@ void ClientSession::getMappingConfig(NXCPMessage *request)
    msg.setId(request->getId());
 
    DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
-   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT video_intro, video_outro, logo,  ")
-                                  _T(" title_template, desc_template, tag_template, enable_intro, enable_outro, enable_logo, ")
-                                  _T(" enable_title, enable_desc, enable_tag FROM mapping_config WHERE mapping_list_Id = ?"));
+   DB_STATEMENT hStmt = DBPrepare(hdb, _T("SELECT render_command, title_template, desc_template, tag_template, ")
+                                  _T(" enable_title, enable_desc, enable_tag FROM mapping_config WHERE mapping_list_id = ?"));
    if (hStmt != NULL)
    {
       INT32 mappingId = request->getFieldAsInt32(VID_MAPPING_CHANNEL_RECORD_ID);
@@ -14242,31 +14241,21 @@ void ClientSession::getMappingConfig(NXCPMessage *request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          for (i = 0, dwId = VID_VARLIST_BASE; i < dwNumRecords; i++, dwId += 10)
          {
-            TCHAR* vIntro        = DBGetField(hResult, i, 0, NULL, 0);        //Video Intro
-            TCHAR* vOutro        = DBGetField(hResult, i, 1, NULL, 0);        //Video Outro
-            TCHAR* vLogo          = DBGetField(hResult, i, 2, NULL, 0);       //Logo
-            TCHAR* titleTemp     = DBGetField(hResult, i, 3, NULL, 0);        //Title template
-            TCHAR* descTemp      = DBGetField(hResult, i, 4, NULL, 0);        //Desc Template
-            TCHAR* tagTemp       = DBGetField(hResult, i, 5, NULL, 0);        //Tag Template
-            INT32 enableIntro    = DBGetFieldInt64(hResult, i, 6);            //Enable Intro
-            INT32 enableOutro    = DBGetFieldInt64(hResult, i, 7);            //Enable Outro
-            INT32 enableLogo     = DBGetFieldInt64(hResult, i, 8);            //Enable Logo
-            INT32 enableTitle    = DBGetFieldInt64(hResult, i, 9);            //Enable Title
-            INT32 enableDesc     = DBGetFieldInt64(hResult, i, 10);           //Enable Desc
-            INT32 enableTags     = DBGetFieldInt64(hResult, i, 11);           //Enable ags
+            TCHAR* renderCmd     = DBGetField(hResult, i, 0, NULL, 0);        //Render command
+            TCHAR* titleTemp     = DBGetField(hResult, i, 1, NULL, 0);        //Title template
+            TCHAR* descTemp      = DBGetField(hResult, i, 2, NULL, 0);        //Desc Template
+            TCHAR* tagTemp       = DBGetField(hResult, i, 3, NULL, 0);        //Tag Template
+            INT32 enableTitle    = DBGetFieldInt64(hResult, i, 4);            //Enable Title
+            INT32 enableDesc     = DBGetFieldInt64(hResult, i, 5);            //Enable Desc
+            INT32 enableTags     = DBGetFieldInt64(hResult, i, 6);            //Enable ags
 
-            msg.setField(dwId , vIntro);
-            msg.setField(dwId + 1, vOutro);
-            msg.setField(dwId + 2, vLogo);
-            msg.setField(dwId + 3, titleTemp);
-            msg.setField(dwId + 4, descTemp);
-            msg.setField(dwId + 5, tagTemp);
-            msg.setField(dwId + 6, enableIntro);
-            msg.setField(dwId + 7, enableOutro);
-            msg.setField(dwId + 8, enableLogo);
-            msg.setField(dwId + 9, enableTitle);
-            msg.setField(dwId + 10, enableDesc);
-            msg.setField(dwId + 11, enableTags);
+            msg.setField(dwId , renderCmd);
+            msg.setField(dwId + 1, titleTemp);
+            msg.setField(dwId + 2, descTemp);
+            msg.setField(dwId + 3, tagTemp);
+            msg.setField(dwId + 4, enableTitle);
+            msg.setField(dwId + 5, enableDesc);
+            msg.setField(dwId + 6, enableTags);
          }
          DBFreeResult(hResult);
       }
@@ -14570,12 +14559,7 @@ void ClientSession::createSpiderMappingConfig(UINT32 mappingId, NXCPMessage *req
    {
       // Prepare and execute INSERT or UPDATE query
       //render config
-      TCHAR* vIntro = request->getFieldAsString(VID_VIDEO_INTRO);
-      TCHAR* vOutro = request->getFieldAsString(VID_VIDEO_OUTRO);
-      TCHAR* vLogo  = request->getFieldAsString(VID_VIDEO_LOGO);
-      INT32 enableIntro = request->getFieldAsInt32(VID_ENABLE_VIDEO_INTRO);
-      INT32 enableOutro = request->getFieldAsInt32(VID_ENABLE_VIDEO_OUTRO);
-      INT32 enableLogo = request->getFieldAsInt32(VID_ENABLE_VIDEO_LOGO);
+      TCHAR* renderCmd = request->getFieldAsString(VID_RENDER_CMD);
       //upload config
       TCHAR* titleTemp = request->getFieldAsString(VID_VIDEO_TITLE_TEMPLATE);
       TCHAR* descTemp = request->getFieldAsString(VID_VIDEO_DESC_TEMPLATE);
@@ -14584,24 +14568,19 @@ void ClientSession::createSpiderMappingConfig(UINT32 mappingId, NXCPMessage *req
       INT32 enableDesc = request->getFieldAsInt32(VID_ENABLE_DESC_TEMPLATE);
       INT32 enableTags = request->getFieldAsInt32(VID_ENABLE_TAGS_TEMPLATE);
 
-      hStmt = DBPrepare(hdb, _T("INSERT INTO mapping_config (video_intro, video_outro, logo, title_template, ")
-                        _T(" desc_template, tag_template, enable_intro, enable_outro, enable_logo, ")
-                        _T(" enable_title, enable_desc, enable_tag, mapping_list_Id)")
-                        _T(" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      hStmt = DBPrepare(hdb, _T("INSERT INTO mapping_config (render_command, title_template, ")
+                        _T(" desc_template, tag_template, enable_title,")
+                        _T(" enable_desc, enable_tag, mapping_list_id)")
+                        _T(" VALUES (?,?,?,?,?,?,?,?)"));
 
-      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)vIntro, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)vOutro, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)vLogo, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)titleTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 5, DB_SQLTYPE_VARCHAR, (const TCHAR *)descTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 6, DB_SQLTYPE_VARCHAR, (const TCHAR *)tagsTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 7, DB_SQLTYPE_INTEGER, enableIntro);
-      DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, enableOutro);
-      DBBind(hStmt, 9, DB_SQLTYPE_INTEGER, enableLogo);
-      DBBind(hStmt, 10, DB_SQLTYPE_INTEGER, enableTitle);
-      DBBind(hStmt, 11, DB_SQLTYPE_INTEGER, enableDesc);
-      DBBind(hStmt, 12, DB_SQLTYPE_INTEGER, enableLogo);
-      DBBind(hStmt, 13, DB_SQLTYPE_INTEGER, mappingId);
+      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)renderCmd, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)titleTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)descTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)tagsTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, enableTitle);
+      DBBind(hStmt, 6, DB_SQLTYPE_INTEGER, enableDesc);
+      DBBind(hStmt, 7, DB_SQLTYPE_INTEGER, enableTags);
+      DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, mappingId);
 
       bool success = DBExecute(hStmt);
       if (success == true)
@@ -14624,12 +14603,7 @@ void ClientSession::modifySpiderMappingConfig(UINT32 mappingId, NXCPMessage * re
    {
       // Prepare and execute INSERT or UPDATE query
       //render config
-      TCHAR* vIntro = request->getFieldAsString(VID_VIDEO_INTRO);
-      TCHAR* vOutro = request->getFieldAsString(VID_VIDEO_OUTRO);
-      TCHAR* vLogo  = request->getFieldAsString(VID_VIDEO_LOGO);
-      INT32 enableIntro = request->getFieldAsInt32(VID_ENABLE_VIDEO_INTRO);
-      INT32 enableOutro = request->getFieldAsInt32(VID_ENABLE_VIDEO_OUTRO);
-      INT32 enableLogo = request->getFieldAsInt32(VID_ENABLE_VIDEO_LOGO);
+      TCHAR* renderCmd = request->getFieldAsString(VID_RENDER_CMD);
       //upload config
       TCHAR* titleTemp = request->getFieldAsString(VID_VIDEO_TITLE_TEMPLATE);
       TCHAR* descTemp = request->getFieldAsString(VID_VIDEO_DESC_TEMPLATE);
@@ -14638,24 +14612,19 @@ void ClientSession::modifySpiderMappingConfig(UINT32 mappingId, NXCPMessage * re
       INT32 enableDesc = request->getFieldAsInt32(VID_ENABLE_DESC_TEMPLATE);
       INT32 enableTags = request->getFieldAsInt32(VID_ENABLE_TAGS_TEMPLATE);
 
-      hStmt = DBPrepare(hdb, _T("UPDATE mapping_config SET video_intro = ?, video_outro = ?, logo = ?, ")
-                        _T(" title_template = ?, desc_template = ?, tag_template = ?, enable_intro = ?, ")
-                        _T(" enable_outro = ?, enable_logo = ?, enable_title = ?, enable_desc = ?, enable_tag = ? ")
-                        _T(" WHERE mapping_list_Id = ?"));
+      hStmt = DBPrepare(hdb, _T("UPDATE mapping_config SET render_command = ?, ")
+                        _T(" title_template = ?, desc_template = ?, tag_template = ?, ")
+                        _T(" enable_title = ?, enable_desc = ?, enable_tag = ? ")
+                        _T(" WHERE mapping_list_id = ?"));
 
-      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)vIntro, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)vOutro, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)vLogo, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)titleTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 5, DB_SQLTYPE_VARCHAR, (const TCHAR *)descTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 6, DB_SQLTYPE_VARCHAR, (const TCHAR *)tagsTemp, DB_BIND_TRANSIENT);
-      DBBind(hStmt, 7, DB_SQLTYPE_INTEGER, enableIntro);
-      DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, enableOutro);
-      DBBind(hStmt, 9, DB_SQLTYPE_INTEGER, enableLogo);
-      DBBind(hStmt, 10, DB_SQLTYPE_INTEGER, enableTitle);
-      DBBind(hStmt, 11, DB_SQLTYPE_INTEGER, enableDesc);
-      DBBind(hStmt, 12, DB_SQLTYPE_INTEGER, enableTags);
-      DBBind(hStmt, 13, DB_SQLTYPE_INTEGER, mappingId);
+      DBBind(hStmt, 1, DB_SQLTYPE_VARCHAR, (const TCHAR *)renderCmd, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 2, DB_SQLTYPE_VARCHAR, (const TCHAR *)titleTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 3, DB_SQLTYPE_VARCHAR, (const TCHAR *)descTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 4, DB_SQLTYPE_VARCHAR, (const TCHAR *)tagsTemp, DB_BIND_TRANSIENT);
+      DBBind(hStmt, 5, DB_SQLTYPE_INTEGER, enableTitle);
+      DBBind(hStmt, 6, DB_SQLTYPE_INTEGER, enableDesc);
+      DBBind(hStmt, 7, DB_SQLTYPE_INTEGER, enableTags);
+      DBBind(hStmt, 8, DB_SQLTYPE_INTEGER, mappingId);
 
       bool success = DBExecute(hStmt);
       if (success == false)
@@ -15361,7 +15330,7 @@ void ClientSession::deleteSpiderMappingConfig(UINT32 mappingId)
 
    if (hdb != NULL)
    {
-      hStmt = DBPrepare(hdb, _T("DELETE FROM mapping_config WHERE mapping_list_Id = ?"));
+      hStmt = DBPrepare(hdb, _T("DELETE FROM mapping_config WHERE mapping_list_id = ?"));
       DBBind(hStmt, 1, DB_SQLTYPE_INTEGER, (INT32)mappingId);
       bool success = DBExecute(hStmt);
       if (success == false)

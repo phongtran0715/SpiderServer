@@ -1291,18 +1291,13 @@ typedef struct
 #define VID_MAPPING_CHANNEL_UPLOAD_CLUSTER_ID      ((UINT32)1056)
 
 
-#define VID_VIDEO_INTRO                            ((UINT32)1057)
-#define VID_VIDEO_OUTRO                            ((UINT32)1058)
-#define VID_VIDEO_LOGO                             ((UINT32)1059)
-#define VID_VIDEO_TITLE_TEMPLATE                   ((UINT32)1060)
-#define VID_VIDEO_DESC_TEMPLATE                    ((UINT32)1061)
-#define VID_VIDEO_TAGS_TEMPLATE                    ((UINT32)1062)
-#define VID_ENABLE_VIDEO_INTRO                     ((UINT32)1063)
-#define VID_ENABLE_VIDEO_OUTRO                     ((UINT32)1064)
-#define VID_ENABLE_VIDEO_LOGO                      ((UINT32)1065)
-#define VID_ENABLE_TITLE_TEMPLATE                  ((UINT32)1066)
-#define VID_ENABLE_DESC_TEMPLATE                   ((UINT32)1067)
-#define VID_ENABLE_TAGS_TEMPLATE                   ((UINT32)1068)
+#define VID_RENDER_CMD                             ((UINT32)1057)
+#define VID_VIDEO_TITLE_TEMPLATE                   ((UINT32)1058)
+#define VID_VIDEO_DESC_TEMPLATE                    ((UINT32)1059)
+#define VID_VIDEO_TAGS_TEMPLATE                    ((UINT32)1060)
+#define VID_ENABLE_TITLE_TEMPLATE                  ((UINT32)1061)
+#define VID_ENABLE_DESC_TEMPLATE                   ((UINT32)1062)
+#define VID_ENABLE_TAGS_TEMPLATE                   ((UINT32)1063)
 #define VID_MAPPING_CHANNEL_END                    ((UINT32)1100)
 
 //cluster variable
