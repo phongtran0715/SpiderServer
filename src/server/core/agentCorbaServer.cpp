@@ -29,14 +29,14 @@ void AgentSide_i::onDownloadStartup(const ::CORBA::WChar* downloadClusterId)
 			{
 				INT32 jobId = DBGetFieldInt64(hResult, i, 0);
 				INT64 timeSync = DBGetFieldInt64(hResult, i, 1);
-				SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadClusterId);
+				NetxmsCorbaClient* downloadClient = new NetxmsCorbaClient((const TCHAR*)downloadClusterId);
 				if (downloadClient->initSuccess)
 				{
-					if (downloadClient->mDownloadRef != NULL)
+					if (downloadClient->netxmsClientRef != NULL)
 					{
 						try
 						{
-							downloadClient->mDownloadRef->createDownloadTimer(jobId, timeSync);
+							downloadClient->netxmsClientRef->createDownloadTimer(jobId, timeSync);
 						}
 						catch (CORBA::TRANSIENT&) {
 							DbgPrintf(1, _T("AgentSide_i::[onDownloadStartup] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -65,7 +65,7 @@ void AgentSide_i::onRenderStartup(const ::CORBA::WChar* renderClusterId)
 	DB_RESULT hResult;
 	TCHAR query [MAX_DB_STRING];
 	UINT32 i, dwNumRecords;
-	SpiderRenderClient* renderClient = new SpiderRenderClient((const TCHAR*)renderClusterId);
+	NetxmsCorbaClient* renderClient = new NetxmsCorbaClient((const TCHAR*)renderClusterId);
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
 	_sntprintf(query, sizeof query,  _T("SELECT id, video_id, title, description, tag, thumbnail, downloaded_path, ")
 	           _T(" process_status, license, mapping_list_id FROM video_container WHERE mapping_list_id IN ")
@@ -99,11 +99,11 @@ void AgentSide_i::onRenderStartup(const ::CORBA::WChar* renderClusterId)
 
 				if (renderClient->initSuccess)
 				{
-					if (renderClient->mRenderRef != NULL)
+					if (renderClient->netxmsClientRef != NULL)
 					{
 						try
 						{
-							renderClient->mRenderRef->createRenderJob(jobId, vInfo);
+							renderClient->netxmsClientRef->createRenderJob(jobId, vInfo);
 							DbgPrintf(5, _T("AgentSide_i::[onRenderStartup] create render job id : %d OK"), jobId);
 						}
 						catch (CORBA::TRANSIENT&) {
@@ -140,7 +140,7 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 	DbgPrintf(5, _T("AgentSide_i::createUploadTimerByMapping : uploadClusterId = %s"), uploadClusterId);
 	DB_RESULT hResult;
 	UINT32 i, dwNumRecords;
-	SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadClusterId);
+	NetxmsCorbaClient* uploadClient = new NetxmsCorbaClient((const TCHAR*)uploadClusterId);
 	DB_HANDLE hdb = DBConnectionPoolAcquireConnection();
 	TCHAR query [MAX_DB_STRING];
 	_sntprintf(query, sizeof query, _T("SELECT DISTINCT home_channel_id FROM mapping_list WHERE status_sync = 1 AND upload_cluster = '%s'"), uploadClusterId);
@@ -158,11 +158,11 @@ void AgentSide_i::createUploadTimerByMapping(const ::CORBA::WChar* uploadCluster
 				TCHAR* cHomeId = DBGetField(hResult, i, 0, NULL, 0);
 				if (uploadClient->initSuccess)
 				{
-					if (uploadClient->mUploadRef != NULL)
+					if (uploadClient->netxmsClientRef != NULL)
 					{
 						try
 						{
-							uploadClient->mUploadRef->createUploadTimer(cHomeId);
+							uploadClient->netxmsClientRef->createUploadTimer(cHomeId);
 						}
 						catch (CORBA::TRANSIENT&) {
 							DbgPrintf(1, _T("AgentSide_i::[createUploadTimerByMapping] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -219,10 +219,10 @@ void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId
 				TCHAR* vRenderedPath = DBGetField(hResult, i, 6, NULL, 0);
 				INT32 mappingId = DBGetFieldInt64(hResult, i, 7);
 
-				SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadClusterId);
+				NetxmsCorbaClient* uploadClient = new NetxmsCorbaClient((const TCHAR*)uploadClusterId);
 				if (uploadClient->initSuccess)
 				{
-					if (uploadClient->mUploadRef != NULL)
+					if (uploadClient->netxmsClientRef != NULL)
 					{
 						try
 						{
@@ -238,7 +238,7 @@ void AgentSide_i::createUploadJobByMapping(const ::CORBA::WChar* uploadClusterId
 							TCHAR* cHomeId = getHomeChannelId(mappingId);
 							if (cHomeId != nullptr)
 							{
-								uploadClient->mUploadRef->createUploadJob(id, vInfo, ::CORBA::wstring_dup(cHomeId));
+								uploadClient->netxmsClientRef->createUploadJob(id, vInfo, ::CORBA::wstring_dup(cHomeId));
 							} else {
 								DbgPrintf(1, _T("AgentSide_i::[createUploadJobByMapping] : home channel ID is NULL"));
 							}
@@ -402,15 +402,15 @@ void AgentSide_i::insertDownloadedVideo(const ::SpiderCorba::SpiderDefine::Video
 		{
 			//notify to render app
 			TCHAR* renderClusterId = getClusterId((INT32)vInfo.mappingId, TYPE_RENDERED);
-			SpiderRenderClient* renderClient = new SpiderRenderClient(renderClusterId);
+			NetxmsCorbaClient* renderClient = new NetxmsCorbaClient(renderClusterId);
 			if (renderClient->initSuccess)
 			{
-				if (renderClient->mRenderRef != NULL)
+				if (renderClient->netxmsClientRef != NULL)
 				{
 					try
 					{
 						INT32 jobId = getMaxId(_T("video_container"));
-						renderClient->mRenderRef->createRenderJob(jobId, vInfo);
+						renderClient->netxmsClientRef->createRenderJob(jobId, vInfo);
 					}
 					catch (CORBA::TRANSIENT&) {
 						DbgPrintf(1, _T("AgentSide_i::[] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -458,14 +458,14 @@ void AgentSide_i::updateDownloadedVideo(::CORBA::Long jobId, const ::SpiderCorba
 		{
 			//notify to render app
 			TCHAR* renderClusterId = getClusterId((INT32)vInfo.mappingId, TYPE_RENDERED);
-			SpiderRenderClient* renderClient = new SpiderRenderClient(renderClusterId);
+			NetxmsCorbaClient* renderClient = new NetxmsCorbaClient(renderClusterId);
 			if (renderClient->initSuccess)
 			{
-				if (renderClient->mRenderRef != NULL)
+				if (renderClient->netxmsClientRef != NULL)
 				{
 					try
 					{
-						renderClient->mRenderRef->createRenderJob(jobId, vInfo);
+						renderClient->netxmsClientRef->createRenderJob(jobId, vInfo);
 					}
 					catch (CORBA::TRANSIENT&) {
 						DbgPrintf(1, _T("AgentSide_i::[] : Caught system exception TRANSIENT -- unable to contact the server"));
@@ -552,17 +552,17 @@ void AgentSide_i::updateRenderedVideo(::CORBA::Long jobId, const ::SpiderCorba::
 		{
 			//notify to upload app
 			TCHAR* uploadClusterId = getClusterId((INT32)vInfo.mappingId, TYPE_UPLOADED);
-			SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadClusterId);
+			NetxmsCorbaClient* uploadClient = new NetxmsCorbaClient((const TCHAR*)uploadClusterId);
 			if (uploadClient->initSuccess)
 			{
-				if (uploadClient->mUploadRef != NULL)
+				if (uploadClient->netxmsClientRef != NULL)
 				{
 					try
 					{
 						TCHAR* cHomeId = getHomeChannelId((INT32)vInfo.mappingId);
 						if (cHomeId != nullptr)
 						{
-							uploadClient->mUploadRef->createUploadJob(jobId, vInfo, ::CORBA::wstring_dup(cHomeId));
+							uploadClient->netxmsClientRef->createUploadJob(jobId, vInfo, ::CORBA::wstring_dup(cHomeId));
 						} else {
 							DbgPrintf(5, _T("AgentSide_i::[updateRenderedVideo] home channel ID is NULL "));
 						}

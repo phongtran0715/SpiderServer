@@ -2,19 +2,7 @@ module SpiderCorba
 {
   interface SpiderDefine
   {
-     struct ChannelInfo
-     {
-          //wstring channelId;
-          //wstring channelName;
-          long videoNumber;
-          long viewNumber;
-          long subcriber;
-          long dateCreated;
-          long status;
-          wstring note;
-     };
-
-     struct VideoInfo
+    struct VideoInfo
      {
           wstring videoId;
           wstring title;
@@ -27,7 +15,7 @@ module SpiderCorba
           long processStatus;
           long license;
     };
-
+    
     struct DownloadConfig
     {
             wstring cHomeId;
@@ -39,7 +27,13 @@ module SpiderCorba
     {
             wstring renderCommand;
     };
-
+    
+    struct CustomVideoInfor
+    {
+            long id;
+            wstring videoId;
+    };
+    
     struct UploadConfig
     {
             wstring vTitleTemp;
@@ -49,7 +43,6 @@ module SpiderCorba
             boolean enableDes;
             boolean enableTags;
     };
-
     struct AuthenInfo
     {
             wstring userName;
@@ -57,49 +50,45 @@ module SpiderCorba
             wstring clientSecret;
             wstring clientId;
     };
-
     struct ClusterInfo
     {
             wstring clusterIp;
             wstring userName;
             wstring password;
     };
-
-    struct CustomVideoInfor
-    {
-            long id;
-            wstring videoId;
-    };
+    struct ChannelInfo
+     {
+          wstring channelId;
+          wstring channelName;
+          long videoNumber;
+          long viewNumber;
+          long subcriber;
+          long dateCreated;
+          long status;
+     };
   };
 
-  interface DownloadSide : SpiderDefine
+  interface SpiderBootSide : SpiderDefine
   {
+        //Download function
         boolean createDownloadTimer(in long timerId, in long timerInterval);
         boolean modifyDownloadTimer(in long timerId, in long timerInterval, in long syncStatus);
         boolean deleteDowloadTimer(in long timerId);
         boolean deleteDownloadedVideo(in long jobId);
-  };
-
-  interface RenderSide : SpiderDefine
-  {
+        
+        //Render function
         boolean createRenderJob(in long jobId, in VideoInfo vInfo);
         boolean deleteRenderJob(in long jobId);
         void deleteRenderdVideo(in wstring vLocation);
-  };
-
-  interface UploadSide : SpiderDefine
-  {
+        
+        //Upload function
         boolean createUploadTimer(in wstring cHomeId);
         boolean deleteUploadTimer(in wstring cHomeId);
         boolean createUploadJob(in long jobId, in VideoInfo vInfo, in wstring cHomeId);
         boolean deleteUploadJob(in long jobId, in wstring cHomeId);
+        
   };
 
-  interface YoutubeAgent : SpiderDefine
-  {
-       void getChannelInfo(in wstring channelId, out wstring channelName, out long videoNumber, out long viewNUmber,
-       out long subcriber, out long dateCreated, out long status);
-  };
 
   interface AgentSide : SpiderDefine
   {
@@ -111,12 +100,12 @@ module SpiderCorba
       void updateDownloadedVideo(in long jobId, in VideoInfo vInfo);
       DownloadConfig getDownloadConfig(in long mappingId);
       CustomVideoInfor getCustomVideo(in wstring downloadClusterId, in long timerId);
-
+      
       //Render app function
       void onRenderStartup(in wstring renderClusterId);
       RenderConfig getRenderConfig(in long mappingId);
       void updateRenderedVideo(in long jobId, in VideoInfo vInfo);
-
+      
       //Upload app function
       void onUploadStartup(in wstring uploadClusterId);
       UploadConfig getUploadConfig(in long mappingId);
@@ -126,4 +115,10 @@ module SpiderCorba
       AuthenInfo getAuthenInfo(in long mappingId);
       ClusterInfo getClusterInfo (in long mappingId, in long clusterType);
   };
+  interface YoutubeAgent : SpiderDefine
+  {
+       void getChannelInfo(in wstring channelId, out wstring channelName, out long videoNumber, 
+        out long viewNUmber, out long subcriber, out long dateCreated, out long status);
+  };
 };
+

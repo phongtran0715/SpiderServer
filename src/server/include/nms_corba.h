@@ -25,40 +25,16 @@ public:
    ~YoutubeAgent();
 };
 
-class LIBCORBA_EXPORTABLE SpiderDownloadClient
+class LIBCORBA_EXPORTABLE NetxmsCorbaClient
 {
 private:
    CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb, const TCHAR* contextName);
 public:
-   SpiderCorba::DownloadSide_var mDownloadRef;
+   SpiderCorba::SpiderBootSide_var netxmsClientRef;
    CORBA::ORB_var mOrb;
    bool initSuccess;
-   SpiderDownloadClient(const TCHAR* contextName);
-   ~SpiderDownloadClient();
-};
-
-class LIBCORBA_EXPORTABLE SpiderRenderClient
-{
-private:
-   CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb, const TCHAR* contextName);
-public:
-   SpiderCorba::RenderSide_var mRenderRef;
-   CORBA::ORB_var mOrb;
-   bool initSuccess;
-   SpiderRenderClient(const TCHAR* contextName);
-   ~SpiderRenderClient();
-};
-
-class LIBCORBA_EXPORTABLE SpiderUploadClient
-{
-private:
-   CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb, const TCHAR* contextName);
-public:
-   SpiderCorba::UploadSide_var mUploadRef;
-   CORBA::ORB_var mOrb;
-   bool initSuccess;
-   SpiderUploadClient(const TCHAR* contextName);
-   ~SpiderUploadClient();
+   NetxmsCorbaClient(const TCHAR* contextName);
+   ~NetxmsCorbaClient();
 };
 
 class AgentCorbaServer

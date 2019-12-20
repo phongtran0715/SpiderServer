@@ -14343,7 +14343,7 @@ void ClientSession::createHomeChannel(NXCPMessage *request)
 ChannelData* ClientSession::getChannelInfo(TCHAR* channelId)
 {
    ChannelData* cData = new ChannelData();
-   YoutubeAgent* ytAgent = new YoutubeAgent(_T("YoutubeAgent"));
+    YoutubeAgent* ytAgent = new YoutubeAgent(_T("YoutubeAgent"));
    if (ytAgent->initSuccess)
    {
       try
@@ -14465,11 +14465,11 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
          {
             //notify to download app
             debugPrintf(6, _T("ClientSession1::[createMappingChannel] beginning notify to download app"));
-            SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadId);
+            NetxmsCorbaClient* downloadClient = new NetxmsCorbaClient((const TCHAR*)downloadId);
             if (downloadClient->initSuccess)
             {
                try {
-                  downloadClient->mDownloadRef->createDownloadTimer(mappingId, timeSync);
+                  downloadClient->netxmsClientRef->createDownloadTimer(mappingId, timeSync);
                }
                catch (CORBA::TRANSIENT&) {
                   debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14486,12 +14486,12 @@ void ClientSession::createMappingChannel(NXCPMessage *request)
 
             //notify upload app
             debugPrintf(6, _T("ClientSession1::[createMappingChannel] beginning notify to upload app"));
-            SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadId);
+            NetxmsCorbaClient* uploadClient = new NetxmsCorbaClient((const TCHAR*)uploadId);
             if (uploadClient->initSuccess)
             {
                try
                {
-                  uploadClient->mUploadRef->createUploadTimer(::CORBA::wstring_dup(cHomeId));
+                  uploadClient->netxmsClientRef->createUploadTimer(::CORBA::wstring_dup(cHomeId));
                }
                catch (CORBA::TRANSIENT&) {
                   debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14793,11 +14793,11 @@ void ClientSession::modifyMappingChannel(NXCPMessage * request)
 
          //notify information to download app
          debugPrintf(6, _T("ClientSession1::[modifyMappingChannel] beginning notify to download app"));
-         SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadId);
+         NetxmsCorbaClient* downloadClient = new NetxmsCorbaClient((const TCHAR*)downloadId);
          if (downloadClient->initSuccess)
          {
             try {
-               downloadClient->mDownloadRef->modifyDownloadTimer((INT32)mappingId, (INT32)timeSync, (INT32)statusSync);
+               downloadClient->netxmsClientRef->modifyDownloadTimer((INT32)mappingId, (INT32)timeSync, (INT32)statusSync);
             }
             catch (CORBA::TRANSIENT&) {
                debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -14995,12 +14995,12 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
          msg.setField(VID_RCC, RCC_SUCCESS);
          //notify information to download app
          debugPrintf(6, _T("Beginning notify to download app"));
-         SpiderDownloadClient* downloadClient = new SpiderDownloadClient((const TCHAR*)downloadId);
+         NetxmsCorbaClient* downloadClient = new NetxmsCorbaClient((const TCHAR*)downloadId);
          if (downloadClient->initSuccess)
          {
             debugPrintf(6, _T("ClientSession::[%s] Init corba for download client successful!"), __FUNCTION__);
             try {
-               downloadClient->mDownloadRef->deleteDowloadTimer(mappingId);
+               downloadClient->netxmsClientRef->deleteDowloadTimer(mappingId);
             }
             catch (CORBA::TRANSIENT&) {
                debugPrintf(1, _T("Caught system exception TRANSIENT -- unable to contact the server"));
@@ -15017,7 +15017,7 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
          //notify information to upload app
 
          debugPrintf(6, _T("Beginning notify to upload app"));
-         SpiderUploadClient* uploadClient = new SpiderUploadClient((const TCHAR*)uploadId);
+         NetxmsCorbaClient* uploadClient = new NetxmsCorbaClient((const TCHAR*)uploadId);
          if (uploadClient->initSuccess)
          {
             debugPrintf(6, _T("ClientSession::[%s] Init corba for upload client successful!"), __FUNCTION__);
@@ -15026,7 +15026,7 @@ void ClientSession::deleteMappingChannel(NXCPMessage * request)
                bool isDelete = checkDeleteUploadTimer(cHomeId);
                if (isDelete)
                {
-                  uploadClient->mUploadRef->deleteUploadTimer(cHomeId);
+                  uploadClient->netxmsClientRef->deleteUploadTimer(cHomeId);
                }
             }
             catch (CORBA::TRANSIENT&) {

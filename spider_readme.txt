@@ -28,7 +28,7 @@ III. Install ffmpeg
     - Create ffmpeg alias (append this content to ~./bashrc file)
             
         export OMNIORB_CONFIG=/opt/omniORB/sample.cfg
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/opt/omniORB/lib
         export FFMPEG=__REPLACE_BY_FFMPEG_PATH__"/ffmpeg"
         export FFPROBE=__REPLACE_BY_FFMPEG_PATH__"/ffprobe"
         alias ffmpeg=__REPLACE_BY_FFMPEG_PATH__/ffmpeg

@@ -115,32 +115,6 @@ _CORBA_MODULE_BEG
     static _core_attr const char* _PD_repoId;
 
     // Other IDL defined within this scope.
-    struct ChannelInfo {
-      typedef _CORBA_ConstrType_Variable_Var<ChannelInfo> _var_type;
-
-      
-      ::CORBA::Long videoNumber;
-
-      ::CORBA::Long viewNumber;
-
-      ::CORBA::Long subcriber;
-
-      ::CORBA::Long dateCreated;
-
-      ::CORBA::Long status;
-
-      ::CORBA::WString_member note;
-
-    
-
-      void operator>>= (cdrStream &) const;
-      void operator<<= (cdrStream &);
-    };
-
-    typedef ChannelInfo::_var_type ChannelInfo_var;
-
-    typedef _CORBA_ConstrType_Variable_OUT_arg< ChannelInfo,ChannelInfo_var > ChannelInfo_out;
-
     struct VideoInfo {
       typedef _CORBA_ConstrType_Variable_Var<VideoInfo> _var_type;
 
@@ -211,6 +185,24 @@ _CORBA_MODULE_BEG
 
     typedef _CORBA_ConstrType_Variable_OUT_arg< RenderConfig,RenderConfig_var > RenderConfig_out;
 
+    struct CustomVideoInfor {
+      typedef _CORBA_ConstrType_Variable_Var<CustomVideoInfor> _var_type;
+
+      
+      ::CORBA::Long id;
+
+      ::CORBA::WString_member videoId;
+
+    
+
+      void operator>>= (cdrStream &) const;
+      void operator<<= (cdrStream &);
+    };
+
+    typedef CustomVideoInfor::_var_type CustomVideoInfor_var;
+
+    typedef _CORBA_ConstrType_Variable_OUT_arg< CustomVideoInfor,CustomVideoInfor_var > CustomVideoInfor_out;
+
     struct UploadConfig {
       typedef _CORBA_ConstrType_Variable_Var<UploadConfig> _var_type;
 
@@ -279,13 +271,23 @@ _CORBA_MODULE_BEG
 
     typedef _CORBA_ConstrType_Variable_OUT_arg< ClusterInfo,ClusterInfo_var > ClusterInfo_out;
 
-    struct CustomVideoInfor {
-      typedef _CORBA_ConstrType_Variable_Var<CustomVideoInfor> _var_type;
+    struct ChannelInfo {
+      typedef _CORBA_ConstrType_Variable_Var<ChannelInfo> _var_type;
 
       
-      ::CORBA::Long id;
+      ::CORBA::WString_member channelId;
 
-      ::CORBA::WString_member videoId;
+      ::CORBA::WString_member channelName;
+
+      ::CORBA::Long videoNumber;
+
+      ::CORBA::Long viewNumber;
+
+      ::CORBA::Long subcriber;
+
+      ::CORBA::Long dateCreated;
+
+      ::CORBA::Long status;
 
     
 
@@ -293,9 +295,9 @@ _CORBA_MODULE_BEG
       void operator<<= (cdrStream &);
     };
 
-    typedef CustomVideoInfor::_var_type CustomVideoInfor_var;
+    typedef ChannelInfo::_var_type ChannelInfo_var;
 
-    typedef _CORBA_ConstrType_Variable_OUT_arg< CustomVideoInfor,CustomVideoInfor_var > CustomVideoInfor_out;
+    typedef _CORBA_ConstrType_Variable_OUT_arg< ChannelInfo,ChannelInfo_var > ChannelInfo_out;
 
   
   };
@@ -353,18 +355,18 @@ _CORBA_MODULE_BEG
   };
 
 
-#ifndef __SpiderCorba_mDownloadSide__
-#define __SpiderCorba_mDownloadSide__
-  class DownloadSide;
-  class _objref_DownloadSide;
-  class _impl_DownloadSide;
+#ifndef __SpiderCorba_mSpiderBootSide__
+#define __SpiderCorba_mSpiderBootSide__
+  class SpiderBootSide;
+  class _objref_SpiderBootSide;
+  class _impl_SpiderBootSide;
   
-  typedef _objref_DownloadSide* DownloadSide_ptr;
-  typedef DownloadSide_ptr DownloadSideRef;
+  typedef _objref_SpiderBootSide* SpiderBootSide_ptr;
+  typedef SpiderBootSide_ptr SpiderBootSideRef;
 
-  class DownloadSide_Helper {
+  class SpiderBootSide_Helper {
   public:
-    typedef DownloadSide_ptr _ptr_type;
+    typedef SpiderBootSide_ptr _ptr_type;
 
     static _ptr_type _nil();
     static _CORBA_Boolean is_nil(_ptr_type);
@@ -374,17 +376,17 @@ _CORBA_MODULE_BEG
     static _ptr_type unmarshalObjRef(cdrStream&);
   };
 
-  typedef _CORBA_ObjRef_Var<_objref_DownloadSide, DownloadSide_Helper> DownloadSide_var;
-  typedef _CORBA_ObjRef_OUT_arg<_objref_DownloadSide,DownloadSide_Helper > DownloadSide_out;
+  typedef _CORBA_ObjRef_Var<_objref_SpiderBootSide, SpiderBootSide_Helper> SpiderBootSide_var;
+  typedef _CORBA_ObjRef_OUT_arg<_objref_SpiderBootSide,SpiderBootSide_Helper > SpiderBootSide_out;
 
 #endif
 
-  // interface DownloadSide
-  class DownloadSide {
+  // interface SpiderBootSide
+  class SpiderBootSide {
   public:
     // Declarations for this interface type.
-    typedef DownloadSide_ptr _ptr_type;
-    typedef DownloadSide_var _var_type;
+    typedef SpiderBootSide_ptr _ptr_type;
+    typedef SpiderBootSide_var _var_type;
 
     static _ptr_type _duplicate(_ptr_type);
     static _ptr_type _narrow(::CORBA::Object_ptr);
@@ -415,7 +417,7 @@ _CORBA_MODULE_BEG
     
   };
 
-  class _objref_DownloadSide :
+  class _objref_SpiderBootSide :
     public virtual _objref_SpiderDefine
   {
   public:
@@ -424,396 +426,58 @@ _CORBA_MODULE_BEG
     ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerInterval, ::CORBA::Long syncStatus);
     ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId);
     ::CORBA::Boolean deleteDownloadedVideo(::CORBA::Long jobId);
-
-    // Constructors
-    inline _objref_DownloadSide()  { _PR_setobj(0); }  // nil
-    _objref_DownloadSide(omniIOR*, omniIdentity*);
-
-  protected:
-    virtual ~_objref_DownloadSide();
-
-    
-  private:
-    virtual void* _ptrToObjRef(const char*);
-
-    _objref_DownloadSide(const _objref_DownloadSide&);
-    _objref_DownloadSide& operator = (const _objref_DownloadSide&);
-    // not implemented
-
-    friend class DownloadSide;
-  };
-
-  class _pof_DownloadSide : public _OMNI_NS(proxyObjectFactory) {
-  public:
-    inline _pof_DownloadSide() : _OMNI_NS(proxyObjectFactory)(DownloadSide::_PD_repoId) {}
-    virtual ~_pof_DownloadSide();
-
-    virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
-    virtual _CORBA_Boolean is_a(const char*) const;
-  };
-
-  class _impl_DownloadSide :
-    public virtual _impl_SpiderDefine
-  {
-  public:
-    virtual ~_impl_DownloadSide();
-
-    virtual ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerInterval) = 0;
-    virtual ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerInterval, ::CORBA::Long syncStatus) = 0;
-    virtual ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId) = 0;
-    virtual ::CORBA::Boolean deleteDownloadedVideo(::CORBA::Long jobId) = 0;
-    
-  public:  // Really protected, workaround for xlC
-    virtual _CORBA_Boolean _dispatch(omniCallHandle&);
-
-  private:
-    virtual void* _ptrToInterface(const char*);
-    virtual const char* _mostDerivedRepoId();
-    
-  };
-
-
-#ifndef __SpiderCorba_mRenderSide__
-#define __SpiderCorba_mRenderSide__
-  class RenderSide;
-  class _objref_RenderSide;
-  class _impl_RenderSide;
-  
-  typedef _objref_RenderSide* RenderSide_ptr;
-  typedef RenderSide_ptr RenderSideRef;
-
-  class RenderSide_Helper {
-  public:
-    typedef RenderSide_ptr _ptr_type;
-
-    static _ptr_type _nil();
-    static _CORBA_Boolean is_nil(_ptr_type);
-    static void release(_ptr_type);
-    static void duplicate(_ptr_type);
-    static void marshalObjRef(_ptr_type, cdrStream&);
-    static _ptr_type unmarshalObjRef(cdrStream&);
-  };
-
-  typedef _CORBA_ObjRef_Var<_objref_RenderSide, RenderSide_Helper> RenderSide_var;
-  typedef _CORBA_ObjRef_OUT_arg<_objref_RenderSide,RenderSide_Helper > RenderSide_out;
-
-#endif
-
-  // interface RenderSide
-  class RenderSide {
-  public:
-    // Declarations for this interface type.
-    typedef RenderSide_ptr _ptr_type;
-    typedef RenderSide_var _var_type;
-
-    static _ptr_type _duplicate(_ptr_type);
-    static _ptr_type _narrow(::CORBA::Object_ptr);
-    static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
-    
-    static _ptr_type _nil();
-
-    static inline void _marshalObjRef(_ptr_type, cdrStream&);
-
-    static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
-      omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static inline _ptr_type _fromObjRef(omniObjRef* o) {
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static _core_attr const char* _PD_repoId;
-
-    // Other IDL defined within this scope.
-    
-  };
-
-  class _objref_RenderSide :
-    public virtual _objref_SpiderDefine
-  {
-  public:
-    // IDL operations
     ::CORBA::Boolean createRenderJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo);
     ::CORBA::Boolean deleteRenderJob(::CORBA::Long jobId);
     void deleteRenderdVideo(const ::CORBA::WChar* vLocation);
-
-    // Constructors
-    inline _objref_RenderSide()  { _PR_setobj(0); }  // nil
-    _objref_RenderSide(omniIOR*, omniIdentity*);
-
-  protected:
-    virtual ~_objref_RenderSide();
-
-    
-  private:
-    virtual void* _ptrToObjRef(const char*);
-
-    _objref_RenderSide(const _objref_RenderSide&);
-    _objref_RenderSide& operator = (const _objref_RenderSide&);
-    // not implemented
-
-    friend class RenderSide;
-  };
-
-  class _pof_RenderSide : public _OMNI_NS(proxyObjectFactory) {
-  public:
-    inline _pof_RenderSide() : _OMNI_NS(proxyObjectFactory)(RenderSide::_PD_repoId) {}
-    virtual ~_pof_RenderSide();
-
-    virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
-    virtual _CORBA_Boolean is_a(const char*) const;
-  };
-
-  class _impl_RenderSide :
-    public virtual _impl_SpiderDefine
-  {
-  public:
-    virtual ~_impl_RenderSide();
-
-    virtual ::CORBA::Boolean createRenderJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
-    virtual ::CORBA::Boolean deleteRenderJob(::CORBA::Long jobId) = 0;
-    virtual void deleteRenderdVideo(const ::CORBA::WChar* vLocation) = 0;
-    
-  public:  // Really protected, workaround for xlC
-    virtual _CORBA_Boolean _dispatch(omniCallHandle&);
-
-  private:
-    virtual void* _ptrToInterface(const char*);
-    virtual const char* _mostDerivedRepoId();
-    
-  };
-
-
-#ifndef __SpiderCorba_mUploadSide__
-#define __SpiderCorba_mUploadSide__
-  class UploadSide;
-  class _objref_UploadSide;
-  class _impl_UploadSide;
-  
-  typedef _objref_UploadSide* UploadSide_ptr;
-  typedef UploadSide_ptr UploadSideRef;
-
-  class UploadSide_Helper {
-  public:
-    typedef UploadSide_ptr _ptr_type;
-
-    static _ptr_type _nil();
-    static _CORBA_Boolean is_nil(_ptr_type);
-    static void release(_ptr_type);
-    static void duplicate(_ptr_type);
-    static void marshalObjRef(_ptr_type, cdrStream&);
-    static _ptr_type unmarshalObjRef(cdrStream&);
-  };
-
-  typedef _CORBA_ObjRef_Var<_objref_UploadSide, UploadSide_Helper> UploadSide_var;
-  typedef _CORBA_ObjRef_OUT_arg<_objref_UploadSide,UploadSide_Helper > UploadSide_out;
-
-#endif
-
-  // interface UploadSide
-  class UploadSide {
-  public:
-    // Declarations for this interface type.
-    typedef UploadSide_ptr _ptr_type;
-    typedef UploadSide_var _var_type;
-
-    static _ptr_type _duplicate(_ptr_type);
-    static _ptr_type _narrow(::CORBA::Object_ptr);
-    static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
-    
-    static _ptr_type _nil();
-
-    static inline void _marshalObjRef(_ptr_type, cdrStream&);
-
-    static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
-      omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static inline _ptr_type _fromObjRef(omniObjRef* o) {
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static _core_attr const char* _PD_repoId;
-
-    // Other IDL defined within this scope.
-    
-  };
-
-  class _objref_UploadSide :
-    public virtual _objref_SpiderDefine
-  {
-  public:
-    // IDL operations
     ::CORBA::Boolean createUploadTimer(const ::CORBA::WChar* cHomeId);
     ::CORBA::Boolean deleteUploadTimer(const ::CORBA::WChar* cHomeId);
     ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo, const ::CORBA::WChar* cHomeId);
     ::CORBA::Boolean deleteUploadJob(::CORBA::Long jobId, const ::CORBA::WChar* cHomeId);
 
     // Constructors
-    inline _objref_UploadSide()  { _PR_setobj(0); }  // nil
-    _objref_UploadSide(omniIOR*, omniIdentity*);
+    inline _objref_SpiderBootSide()  { _PR_setobj(0); }  // nil
+    _objref_SpiderBootSide(omniIOR*, omniIdentity*);
 
   protected:
-    virtual ~_objref_UploadSide();
+    virtual ~_objref_SpiderBootSide();
 
     
   private:
     virtual void* _ptrToObjRef(const char*);
 
-    _objref_UploadSide(const _objref_UploadSide&);
-    _objref_UploadSide& operator = (const _objref_UploadSide&);
+    _objref_SpiderBootSide(const _objref_SpiderBootSide&);
+    _objref_SpiderBootSide& operator = (const _objref_SpiderBootSide&);
     // not implemented
 
-    friend class UploadSide;
+    friend class SpiderBootSide;
   };
 
-  class _pof_UploadSide : public _OMNI_NS(proxyObjectFactory) {
+  class _pof_SpiderBootSide : public _OMNI_NS(proxyObjectFactory) {
   public:
-    inline _pof_UploadSide() : _OMNI_NS(proxyObjectFactory)(UploadSide::_PD_repoId) {}
-    virtual ~_pof_UploadSide();
+    inline _pof_SpiderBootSide() : _OMNI_NS(proxyObjectFactory)(SpiderBootSide::_PD_repoId) {}
+    virtual ~_pof_SpiderBootSide();
 
     virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
     virtual _CORBA_Boolean is_a(const char*) const;
   };
 
-  class _impl_UploadSide :
+  class _impl_SpiderBootSide :
     public virtual _impl_SpiderDefine
   {
   public:
-    virtual ~_impl_UploadSide();
+    virtual ~_impl_SpiderBootSide();
 
+    virtual ::CORBA::Boolean createDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerInterval) = 0;
+    virtual ::CORBA::Boolean modifyDownloadTimer(::CORBA::Long timerId, ::CORBA::Long timerInterval, ::CORBA::Long syncStatus) = 0;
+    virtual ::CORBA::Boolean deleteDowloadTimer(::CORBA::Long timerId) = 0;
+    virtual ::CORBA::Boolean deleteDownloadedVideo(::CORBA::Long jobId) = 0;
+    virtual ::CORBA::Boolean createRenderJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo) = 0;
+    virtual ::CORBA::Boolean deleteRenderJob(::CORBA::Long jobId) = 0;
+    virtual void deleteRenderdVideo(const ::CORBA::WChar* vLocation) = 0;
     virtual ::CORBA::Boolean createUploadTimer(const ::CORBA::WChar* cHomeId) = 0;
     virtual ::CORBA::Boolean deleteUploadTimer(const ::CORBA::WChar* cHomeId) = 0;
     virtual ::CORBA::Boolean createUploadJob(::CORBA::Long jobId, const ::SpiderCorba::SpiderDefine::VideoInfo& vInfo, const ::CORBA::WChar* cHomeId) = 0;
     virtual ::CORBA::Boolean deleteUploadJob(::CORBA::Long jobId, const ::CORBA::WChar* cHomeId) = 0;
-    
-  public:  // Really protected, workaround for xlC
-    virtual _CORBA_Boolean _dispatch(omniCallHandle&);
-
-  private:
-    virtual void* _ptrToInterface(const char*);
-    virtual const char* _mostDerivedRepoId();
-    
-  };
-
-
-#ifndef __SpiderCorba_mYoutubeAgent__
-#define __SpiderCorba_mYoutubeAgent__
-  class YoutubeAgent;
-  class _objref_YoutubeAgent;
-  class _impl_YoutubeAgent;
-  
-  typedef _objref_YoutubeAgent* YoutubeAgent_ptr;
-  typedef YoutubeAgent_ptr YoutubeAgentRef;
-
-  class YoutubeAgent_Helper {
-  public:
-    typedef YoutubeAgent_ptr _ptr_type;
-
-    static _ptr_type _nil();
-    static _CORBA_Boolean is_nil(_ptr_type);
-    static void release(_ptr_type);
-    static void duplicate(_ptr_type);
-    static void marshalObjRef(_ptr_type, cdrStream&);
-    static _ptr_type unmarshalObjRef(cdrStream&);
-  };
-
-  typedef _CORBA_ObjRef_Var<_objref_YoutubeAgent, YoutubeAgent_Helper> YoutubeAgent_var;
-  typedef _CORBA_ObjRef_OUT_arg<_objref_YoutubeAgent,YoutubeAgent_Helper > YoutubeAgent_out;
-
-#endif
-
-  // interface YoutubeAgent
-  class YoutubeAgent {
-  public:
-    // Declarations for this interface type.
-    typedef YoutubeAgent_ptr _ptr_type;
-    typedef YoutubeAgent_var _var_type;
-
-    static _ptr_type _duplicate(_ptr_type);
-    static _ptr_type _narrow(::CORBA::Object_ptr);
-    static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
-    
-    static _ptr_type _nil();
-
-    static inline void _marshalObjRef(_ptr_type, cdrStream&);
-
-    static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
-      omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static inline _ptr_type _fromObjRef(omniObjRef* o) {
-      if (o)
-        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
-      else
-        return _nil();
-    }
-
-    static _core_attr const char* _PD_repoId;
-
-    // Other IDL defined within this scope.
-    
-  };
-
-  class _objref_YoutubeAgent :
-    public virtual _objref_SpiderDefine
-  {
-  public:
-    // IDL operations
-    void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status);
-
-    // Constructors
-    inline _objref_YoutubeAgent()  { _PR_setobj(0); }  // nil
-    _objref_YoutubeAgent(omniIOR*, omniIdentity*);
-
-  protected:
-    virtual ~_objref_YoutubeAgent();
-
-    
-  private:
-    virtual void* _ptrToObjRef(const char*);
-
-    _objref_YoutubeAgent(const _objref_YoutubeAgent&);
-    _objref_YoutubeAgent& operator = (const _objref_YoutubeAgent&);
-    // not implemented
-
-    friend class YoutubeAgent;
-  };
-
-  class _pof_YoutubeAgent : public _OMNI_NS(proxyObjectFactory) {
-  public:
-    inline _pof_YoutubeAgent() : _OMNI_NS(proxyObjectFactory)(YoutubeAgent::_PD_repoId) {}
-    virtual ~_pof_YoutubeAgent();
-
-    virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
-    virtual _CORBA_Boolean is_a(const char*) const;
-  };
-
-  class _impl_YoutubeAgent :
-    public virtual _impl_SpiderDefine
-  {
-  public:
-    virtual ~_impl_YoutubeAgent();
-
-    virtual void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status) = 0;
     
   public:  // Really protected, workaround for xlC
     virtual _CORBA_Boolean _dispatch(omniCallHandle&);
@@ -967,6 +631,120 @@ _CORBA_MODULE_BEG
   };
 
 
+#ifndef __SpiderCorba_mYoutubeAgent__
+#define __SpiderCorba_mYoutubeAgent__
+  class YoutubeAgent;
+  class _objref_YoutubeAgent;
+  class _impl_YoutubeAgent;
+  
+  typedef _objref_YoutubeAgent* YoutubeAgent_ptr;
+  typedef YoutubeAgent_ptr YoutubeAgentRef;
+
+  class YoutubeAgent_Helper {
+  public:
+    typedef YoutubeAgent_ptr _ptr_type;
+
+    static _ptr_type _nil();
+    static _CORBA_Boolean is_nil(_ptr_type);
+    static void release(_ptr_type);
+    static void duplicate(_ptr_type);
+    static void marshalObjRef(_ptr_type, cdrStream&);
+    static _ptr_type unmarshalObjRef(cdrStream&);
+  };
+
+  typedef _CORBA_ObjRef_Var<_objref_YoutubeAgent, YoutubeAgent_Helper> YoutubeAgent_var;
+  typedef _CORBA_ObjRef_OUT_arg<_objref_YoutubeAgent,YoutubeAgent_Helper > YoutubeAgent_out;
+
+#endif
+
+  // interface YoutubeAgent
+  class YoutubeAgent {
+  public:
+    // Declarations for this interface type.
+    typedef YoutubeAgent_ptr _ptr_type;
+    typedef YoutubeAgent_var _var_type;
+
+    static _ptr_type _duplicate(_ptr_type);
+    static _ptr_type _narrow(::CORBA::Object_ptr);
+    static _ptr_type _unchecked_narrow(::CORBA::Object_ptr);
+    
+    static _ptr_type _nil();
+
+    static inline void _marshalObjRef(_ptr_type, cdrStream&);
+
+    static inline _ptr_type _unmarshalObjRef(cdrStream& s) {
+      omniObjRef* o = omniObjRef::_unMarshal(_PD_repoId,s);
+      if (o)
+        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+      else
+        return _nil();
+    }
+
+    static inline _ptr_type _fromObjRef(omniObjRef* o) {
+      if (o)
+        return (_ptr_type) o->_ptrToObjRef(_PD_repoId);
+      else
+        return _nil();
+    }
+
+    static _core_attr const char* _PD_repoId;
+
+    // Other IDL defined within this scope.
+    
+  };
+
+  class _objref_YoutubeAgent :
+    public virtual _objref_SpiderDefine
+  {
+  public:
+    // IDL operations
+    void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status);
+
+    // Constructors
+    inline _objref_YoutubeAgent()  { _PR_setobj(0); }  // nil
+    _objref_YoutubeAgent(omniIOR*, omniIdentity*);
+
+  protected:
+    virtual ~_objref_YoutubeAgent();
+
+    
+  private:
+    virtual void* _ptrToObjRef(const char*);
+
+    _objref_YoutubeAgent(const _objref_YoutubeAgent&);
+    _objref_YoutubeAgent& operator = (const _objref_YoutubeAgent&);
+    // not implemented
+
+    friend class YoutubeAgent;
+  };
+
+  class _pof_YoutubeAgent : public _OMNI_NS(proxyObjectFactory) {
+  public:
+    inline _pof_YoutubeAgent() : _OMNI_NS(proxyObjectFactory)(YoutubeAgent::_PD_repoId) {}
+    virtual ~_pof_YoutubeAgent();
+
+    virtual omniObjRef* newObjRef(omniIOR*,omniIdentity*);
+    virtual _CORBA_Boolean is_a(const char*) const;
+  };
+
+  class _impl_YoutubeAgent :
+    public virtual _impl_SpiderDefine
+  {
+  public:
+    virtual ~_impl_YoutubeAgent();
+
+    virtual void getChannelInfo(const ::CORBA::WChar* channelId, ::CORBA::WString_out channelName, ::CORBA::Long& videoNumber, ::CORBA::Long& viewNUmber, ::CORBA::Long& subcriber, ::CORBA::Long& dateCreated, ::CORBA::Long& status) = 0;
+    
+  public:  // Really protected, workaround for xlC
+    virtual _CORBA_Boolean _dispatch(omniCallHandle&);
+
+  private:
+    virtual void* _ptrToInterface(const char*);
+    virtual const char* _mostDerivedRepoId();
+    
+  };
+
+
 _CORBA_MODULE_END
 
 
@@ -986,51 +764,15 @@ _CORBA_MODULE_BEG
     }
   };
 
-  class DownloadSide :
-    public virtual SpiderCorba::_impl_DownloadSide,
+  class SpiderBootSide :
+    public virtual SpiderCorba::_impl_SpiderBootSide,
     public virtual SpiderDefine
   {
   public:
-    virtual ~DownloadSide();
+    virtual ~SpiderBootSide();
 
-    inline ::SpiderCorba::DownloadSide_ptr _this() {
-      return (::SpiderCorba::DownloadSide_ptr) _do_this(::SpiderCorba::DownloadSide::_PD_repoId);
-    }
-  };
-
-  class RenderSide :
-    public virtual SpiderCorba::_impl_RenderSide,
-    public virtual SpiderDefine
-  {
-  public:
-    virtual ~RenderSide();
-
-    inline ::SpiderCorba::RenderSide_ptr _this() {
-      return (::SpiderCorba::RenderSide_ptr) _do_this(::SpiderCorba::RenderSide::_PD_repoId);
-    }
-  };
-
-  class UploadSide :
-    public virtual SpiderCorba::_impl_UploadSide,
-    public virtual SpiderDefine
-  {
-  public:
-    virtual ~UploadSide();
-
-    inline ::SpiderCorba::UploadSide_ptr _this() {
-      return (::SpiderCorba::UploadSide_ptr) _do_this(::SpiderCorba::UploadSide::_PD_repoId);
-    }
-  };
-
-  class YoutubeAgent :
-    public virtual SpiderCorba::_impl_YoutubeAgent,
-    public virtual SpiderDefine
-  {
-  public:
-    virtual ~YoutubeAgent();
-
-    inline ::SpiderCorba::YoutubeAgent_ptr _this() {
-      return (::SpiderCorba::YoutubeAgent_ptr) _do_this(::SpiderCorba::YoutubeAgent::_PD_repoId);
+    inline ::SpiderCorba::SpiderBootSide_ptr _this() {
+      return (::SpiderCorba::SpiderBootSide_ptr) _do_this(::SpiderCorba::SpiderBootSide::_PD_repoId);
     }
   };
 
@@ -1043,6 +785,18 @@ _CORBA_MODULE_BEG
 
     inline ::SpiderCorba::AgentSide_ptr _this() {
       return (::SpiderCorba::AgentSide_ptr) _do_this(::SpiderCorba::AgentSide::_PD_repoId);
+    }
+  };
+
+  class YoutubeAgent :
+    public virtual SpiderCorba::_impl_YoutubeAgent,
+    public virtual SpiderDefine
+  {
+  public:
+    virtual ~YoutubeAgent();
+
+    inline ::SpiderCorba::YoutubeAgent_ptr _this() {
+      return (::SpiderCorba::YoutubeAgent_ptr) _do_this(::SpiderCorba::YoutubeAgent::_PD_repoId);
     }
   };
 
@@ -1070,27 +824,17 @@ SpiderCorba::SpiderDefine::_marshalObjRef(::SpiderCorba::SpiderDefine_ptr obj, c
 }
 
 inline void
-SpiderCorba::DownloadSide::_marshalObjRef(::SpiderCorba::DownloadSide_ptr obj, cdrStream& s) {
-  omniObjRef::_marshal(obj->_PR_getobj(),s);
-}
-
-inline void
-SpiderCorba::RenderSide::_marshalObjRef(::SpiderCorba::RenderSide_ptr obj, cdrStream& s) {
-  omniObjRef::_marshal(obj->_PR_getobj(),s);
-}
-
-inline void
-SpiderCorba::UploadSide::_marshalObjRef(::SpiderCorba::UploadSide_ptr obj, cdrStream& s) {
-  omniObjRef::_marshal(obj->_PR_getobj(),s);
-}
-
-inline void
-SpiderCorba::YoutubeAgent::_marshalObjRef(::SpiderCorba::YoutubeAgent_ptr obj, cdrStream& s) {
+SpiderCorba::SpiderBootSide::_marshalObjRef(::SpiderCorba::SpiderBootSide_ptr obj, cdrStream& s) {
   omniObjRef::_marshal(obj->_PR_getobj(),s);
 }
 
 inline void
 SpiderCorba::AgentSide::_marshalObjRef(::SpiderCorba::AgentSide_ptr obj, cdrStream& s) {
+  omniObjRef::_marshal(obj->_PR_getobj(),s);
+}
+
+inline void
+SpiderCorba::YoutubeAgent::_marshalObjRef(::SpiderCorba::YoutubeAgent_ptr obj, cdrStream& s) {
   omniObjRef::_marshal(obj->_PR_getobj(),s);
 }
 
